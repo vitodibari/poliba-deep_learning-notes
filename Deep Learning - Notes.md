@@ -350,7 +350,7 @@ $$
 \mathrm{LogSigmoid}(x)=\log\left( \frac{1}{1+e^{-x}} \right)
 $$
 ![[Pasted image 20250331144701.png|450]]
-### Softmin
+## Softmin
 #MEM
 $$
 \mathrm{Softmin}(x_{i})=\frac{e^{-x_{i}}}{\sum_{j}e^{-x_{j}}}
@@ -363,7 +363,7 @@ Softmin tends to activate more the lowest values.
 **Example**
 $x=[1,2,3]$
 $\mathrm{Softmin(x)}:[0.66524096, 0.24472847, 0.09003057]$
-### Softmax
+## Softmax
 #MEM
 $$
 \mathrm{Softmax}(x_{i})=\frac{e^{x_{i}}}{\sum_{j}e^{x_{j}}}
@@ -376,15 +376,18 @@ Softmax tends to activate more the highest values.
 **Example**
 $x=[1,2,3]$
 $\mathrm{Softmax(x)}:[0.09003057, 0.24472847, 0.66524096]$
-### LogSoftmax
+## LogSoftmax
 #MEM
 $$
 \mathrm{LogSoftmax}(x_{i})=\log \left( \frac{e^{x_{i}}}{\sum_{j}e^{x_{j}}} \right)
 $$
 It is not generally used as activation function, but as a component in other loss functions.
 # 5. Loss Functions
-## L1 and L2 losses
-### Mean Squared Error (L2 loss)
+Here are listed some of the most used losses in Deep Learning.
+Specific loss functions are used for specific tasks, such as regression and classification ones.
+## Regression tasks
+### L1 and L2 losses
+#### Mean Squared Error (L2 loss)
 #MEM
 [![How to Calculate L2/MSE Loss in PyTorch? | Liberian Geek|300](https://www.liberiangeek.net/
 This function gives the mean squared error (squared L2 norm) between each element in the input $x$ and target $y$.
@@ -403,7 +406,7 @@ mean(L) & \text{if reduction = "mean"} \\
 sum(L) & \text{if reduction = "sum"} \\
 \end{cases}
 $$
-### Mean Absolute Error (L1 loss)
+#### Mean Absolute Error (L1 loss)
 #MEM 
 This measures the mean absolute error (MAE) between each element in the input $x$ and target $y$.
 
@@ -420,7 +423,7 @@ MAE can be also intended as **reduced** (a scalar is returned) using `mean` or `
 
 > [!NOTE] ⚠️
 > L1 loss is not differentiable at the bottom 0.
-### Smooth Mean Absolute Error (smooth L1 loss)
+#### Smooth Mean Absolute Error (smooth L1 loss)
 $$
 l(x,y)=\frac{1}{n} \sum_{i} z_{i}
 \quad \text{with} \quad
@@ -436,9 +439,14 @@ It is known also as **Huber Loss** or **Elastic Network**.
 
 > [!NOTE] 💡
 > Often used in computer vision due to its robustness against outliers.
-### L1 vs L2 for Computer Vision
+#### L1 vs L2 for Computer Vision
 It is better to use L1 because returns more sharper images.
-## Negative Log Likelihood Loss
+## Classification tasks
+### Negative Log Likelihood Loss
+==#TODO: capire meglio==
+> [!info]
+> https://towardsdatascience.com/cross-entropy-negative-log-likelihood-and-all-that-jazz-47a95bd2e81/
+
 It is usually used as loss function during training in classification problems with C classes.
 Mathematically, <u>the input of NLLLoss should be (log) likelihoods</u> (like [[#LogSoftmax]]).
 
@@ -452,7 +460,7 @@ l_{n}=-w_{y_n}x_{n,y_{n}}, \quad
 w_{c}=\mathrm{weight}[c] \cdot 1 \{c \ne \text{ignore\_index} \}
 $$
 where:
-* 
+* $x_{n,y_{n}}$ ==#TODO==
 * \[optional] $\mathrm{weight}$ is a 1D Tensor assigning weight to each of the classes ($\mathrm{weight}[c]$ is the weight assigned to the $c$-th class). This is particularly useful when you have an unbalanced training set;
 MAE can be also intended as **reduced** (a scalar is returned):
 $$
@@ -464,7 +472,7 @@ l(x,y)=
 $$
 > [!tip]
 > Obtaining log-probabilities in a neural network is easily achieved by adding a [[#LogSoftmax]] layer in the last layer of your network. You may use [[#CrossEntropyLoss]] instead, if you prefer not to add an extra layer.
-### Weights & Imbalanced Classes
+#### Weights & Imbalanced Classes
 The **weight vector** $\mathrm{weight}$ is useful when data classes have different frequencies (e.g. the
 frequency of the common flu is much higher than the lung cancer).
 Naively, we could simply increase the weight for categories that has small number of samples.
@@ -480,11 +488,16 @@ samples to use, <u>we iterate through the smaller buffer from the beginning agai
 Following the *frequency equalization* process leads to the problem that our NN model wouldn’t know the relative frequency of the actual samples. To solve that, we can <u>fine-tune the system by
 running a few epochs at the end with the actual class frequency</u>, so that the system adapts
 to the biases at the output layer to the data frequency.
-## CrossEntropyLoss
+### CrossEntropyLoss
+> [!info]
+> https://youtu.be/Pwgpl9mKars
+
 ==#TODO==
-## Adaptive Log Softmax with Loss
+It just combines [[#LogSoftmax]] with [[#Negative Log Likelihood Loss]].
+
+### Adaptive Log Softmax with Loss
 It is basically an efficient softmax approximation of softmax for large number of classes (e.g. millions of classes). It implements tricks to improve the speed of the computation.
-## Binary Cross Entropy Loss
+### Binary Cross Entropy Loss
 #MEM
 BCE Loss can be adopted for binary classification problems only.
 $$
@@ -494,7 +507,10 @@ l_{n}=-w_{n}[y_{n}\log x_{n}+(1-y_{n})\log(1-x_{n})]
 $$
 Where $x_{n}$ and $y_{n}$ are assumed as probabilities, so they are strictly between 0 and 1.
 And $x$ and $y$ are probability distributions.
-## Kullback-Leibler Divergence Loss
+### Kullback-Leibler Divergence Loss
+> [!info]
+> https://youtu.be/SxGYPqCgJWM
+
 #MEM
 $$
 l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
@@ -505,7 +521,7 @@ To avoid underflow issues when computing this quantity, this loss expects the ar
 
 > [!NOTE] ⚠️
 > It has the disadvantage that it is not merged with a softmax or log-softmax so it may have numerical stability issues due to floating point operations.
-## Binary Cross Entropy Loss with Logits
+### Binary Cross Entropy Loss with Logits
 This loss combines a Sigmoid layer and the BCELoss in one single class. 
 $$
 l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
@@ -514,7 +530,7 @@ l_{n}=-w_{n}[y_{n}\log \sigma(x_{n})+(1-y_{n})\log(1-\sigma(x_{n}))]
 $$
 > [!NOTE] ⚠️
 > This version is more numerically stable than just using a plain Sigmoid followed by a BCELoss.
-## Hinge Embedding Loss
+### Hinge Embedding Loss
 Measures the loss given an input tensor $x$ and a labels tensor $y$ (containing 1 or -1).
 $$
 l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
@@ -527,15 +543,15 @@ x_{n} & \text{if } y_{n}=1 \\
 $$
 It can be also intended as reduced (a scalar is returned) using `mean` or `sum`.
 ==#TODO: vedere meglio==
-## Margin Ranking Loss
+### Margin Ranking Loss
 ==#TODO==
-## Triplet Margin Loss
+### Triplet Margin Loss
 ==#TODO==
-## Soft Margin Loss
+### Soft Margin Loss
 ==#TODO==
-## Multi-Class Hinge Loss
+### Multi-Class Hinge Loss
 ==#TODO==
-## Cosine Embedding Loss
+### Cosine Embedding Loss
 ==#TODO==
 # 6. Optimization
 > [!NOTE] 📚
@@ -608,7 +624,6 @@ Just to recall some rules about the small random values:
 However, Xavier Glorot and Yoshua Bengio proposed an improved initialization method: the **Xavier initialization**. The main difference w.r.t. traditional methods is that each layer’s size is taken into account when its weights are getting initialized.
 
 ### Xavier Initialization
-#MEM 
 <u>The idea is to initialize smaller layer’s weights when its fan-in is big</u> (i.e. its number of inputs): if a hidden unit has a big fan-in, <u>small changes on many of its incoming weights can cause the learning to overshoot</u>. So we look for smaller incoming weights, inverse proportional to fan-in:
 
 $$
@@ -618,6 +633,7 @@ $$
 Even better, Xavier initialization takes fan-out in account as well:
 
 #### Uniform Xavier Initialization
+#MEM 
 Where random values are taken from the following uniform distribution:
 $$
 \mathcal U(-a,a)
@@ -625,18 +641,17 @@ $$
 a=gain \cdot \sqrt{\dfrac{6}{n_{in}+n_{out}}}
 $$
 #### Normal Xavier Initialization
+#MEM 
 Where random values are taken from the following normal distribution:
 $$
 \mathcal N(0,\sigma^2)
 \quad \text{where} \quad
 \sigma=gain \cdot \sqrt{\dfrac{2}{n_{in}+n_{out}}}
 $$
-Xavier initialization only works with activations such as Sigmoid and tanh. ReLU activations cannot be initialized with Xavier; see below.
+<u>Xavier initialization only works with activations such as Sigmoid and tanh. ReLU activations cannot be initialized </u>with Xavier; see below.
 
 ### Kaiming Initialization (He Initialization)
-
-It is an initialization technique similar to Xavier one, but suitable for ReLU activations.
-
+It is an initialization technique similar to Xavier one, but <u>suitable for ReLU activations</u>.
 Here, random values are taken from the following normal distribution:
 
 $\mathcal N(0,\sigma^2)$ where $\sigma=gain \cdot \sqrt{\dfrac{2}{n^l}}$
@@ -651,17 +666,17 @@ Recap [here](https://www.notion.so/Machine-Learning-Notes-fd12021b7a554122bce07e
 ## Tips to speed up mini-batch learning
 - use [[#Momentum]]
 - use [[#Adaptive Learning Rate]]
-- use rmsprop #TOLINK
+- use [[#rmsprop]]
 - use optimization techniques that uses curvature informations
 ## Momentum
-> [!NOTE] 📚
+> [!info]
 > https://distill.pub/2017/momentum/
 
 ![image.png](assets/image%203.png)
 
 Momentum <u>is used to solve the plateau problem by keeping optimizing when a plateau is encountered. It helps increasing optimization speed in general.</u>
 
-The idea is to represent GD optimization as a ball running onto a surface, trying to reach the global minimum. Without momentum, ball will get stuck when plateau is faced.
+The idea is to represent GD optimization as a physical ball running onto a surface, trying to reach the global minimum. Without momentum, ball will get stuck when plateau is faced.
 Outcomes are:
 - avoid rapid changes of direction, making *the ball* keep going in the previous direction for a while (like in physics);
 - damps oscillations in direction of high curvature;
@@ -674,7 +689,7 @@ Momentum is very useful also when facing saddle points or local minima.
 ![image.png|400](assets/image%205.png)
 *Scenario with momentum*
 
-> [!NOTE] 📚
+> [!info]
 > SGD Momentum is similar to the concept of momentum in physics: the optimization process resembles a heavy ball rolling down the hill where:
 > - momentum keeps the ball moving in the same direction that it is already moving in;
 > - while gradient can be thought of as a force pushing the ball in some other direction.
@@ -714,19 +729,19 @@ w_{k+1}=w_k-\gamma\nabla L(X,y,w_k)+\beta(w_k-w_{k-1})
 $$
 $\beta$ tells how much of the previous direction to keep.
 It has been omitted because of its limited contribute to the final outcome.
-### Practical tips
-- use momentum with Stochastic Gradient Descent only
-- keep $0.9\le\beta\le0.99$
-- decrease $\eta$ when increasing $\beta$ to keep convergence and the same order of magnitude
-- at the beginning of learning, keep momentum small (~0.5) because of very large gradients
-then, raise it to the final value (~0.9-0.99)
+
+> [!tip]
+> - use momentum with Stochastic Gradient Descent only
+> - keep $0.9\le\beta\le0.99$
+> - decrease $\eta$ when increasing $\beta$ to keep convergence and the same order of magnitude
+> - at the beginning of learning, keep momentum small (~0.5) because of very large gradients then, raise it to the final value (~0.9-0.99)
 
 Momentum allows training at speeds that would cause divergent oscillations in the vanilla GD case.
 ### Nesterov Accelerated Gradient
 > [!NOTE] 📚
 > https://youtu.be/sV9aiEsXanE
 
-\[#Recall]
+#Recall
 The previous momentum method consisted in:
 1. compute gradient at current location
 2. take a big jump in the direction of the updated accumulated gradient
@@ -748,7 +763,8 @@ $$
 ### Why does momentum work?
 * **Acceleration(?)**: NAG guarantees accelerated performances for convex problems only, so not for NNs. Furthermore, acceleration does not work well with noise, so it does not work well with SGD (*noisy* approach)
 * **Noise smoothing**: <u>momentum averages gradients</u> at each step update. Using momentum has the same outcome of averaging a bunch of updates and then take a step in the *averaged direction*.
-> [!NOTE] 💡
+
+> [!tip]
 > Momentum allows a smoother convergence when the *bottom of the valley* is reached, avoiding bouncing-around updates.
 > ![[Pasted image 20250403230400.png|400]]
 ## Adaptive Learning Rate
@@ -781,36 +797,36 @@ Some tips:
 - use full-batch learning or big mini-batches in order to avoid changes of gradient’s sign due to sampling errors of mini-batch approach
 - combine it with momentum
 - adaptive learning rates only deal with axis-aligned effects
-> [!NOTE] 💡
-> This approach is very similar to the TCP Congestion Control one.
 
+> [!tip]
+> This approach is very similar to the TCP Congestion Control one.
 ## Implementation
 > [!NOTE] 📚
 > https://youtu.be/AM9c7zN2KwU (author of Toronto University slides)
 ### rprop
-> [!NOTE] 📚
-> https://arxiv.org/pdf/1509.04612
+> [!info]
+> https://ieeexplore.ieee.org/document/298623
+> https://arxiv.org/pdf/1509.04612 (rprop + dropout)
 
 `rprop` stands for **resilient (back)propagation**.
 
-<u>The idea is to determine the learning rate value for each step just by looking at the change of sign of the gradient.</u>
+<u>The idea is to determine the learning rate value for each parameter, at each update step just by looking at the change of sign of the gradient.</u>
 If the current gradient keeps the same sign of the previous one:
-* then: increase the step size in that direction, up to a limit $\Gamma_{max}$
-* else: decrease the step size (in that direction), up to a limit $\Gamma_{min}$
-  moreover, gradient is set to 0, to artificially skip the next iteration to avoid the *double punishment*
-> [!NOTE] 💡 **Double punishment**
-> ==#TODO==
+* then: increase the step size in that direction, up to a limit $\Gamma_{max}$;
+* else: decrease the step size (in that direction), up to a limit $\Gamma_{min}$.
+  In this case, the minimum was missed and gradient is *artificially* set to 0 ($g_t^i \leftarrow 0$), so the next iteration will end up in the third branch (second else). This is done to skip to avoid the *double punishment*, so to end up in the second branch over and over.
+
+> [!NOTE] **Double punishment**
+> #TODO 
 
 #MEM 
 ![[Screenshot 2025-04-04 alle 08.30.11.png|500]]
 #### Mini-batches problem
 <u>rprop does not work properly when using small batches, because it has been designed for full-batch training.</u>
-The desired effect it to average the gradient somehow, but if there are very few values then the average is not effective.
 
 **Example**
 A weight is updated by ten mini-batches: on nine mini-batches gets a gradient of $+0.1$, while it gets $-0.9$ on the last one mini-batch.
 We want the weight to stay roughly where it is, instead it grows a lot in a wrong direction (gets incremented nine times and decremented just once).
-==#TODO: capire meglio da slides Toronto==
 ### rmsprop
 `rmsprop` stands for **root mean square (back)propagation**.
 
@@ -819,25 +835,28 @@ The idea is to divide the gradient by a quantity that depends on its (quadratic)
 ![[Pasted image 20250404105009.png|500]]
 *Pytorch `rmsprop` implementation. Focus on the else branch.*
 
-In order to enable rmsprop, i must have $0<\alpha<1$:
-* $\alpha=0.9$, so:
+where
+* $0<\alpha<1$, $\alpha=0.99$ (default) and it *enables* rmsprop:
   $$
-  v_{t} \leftarrow 0.9v_{t-1}+0.1g_{t}^2
+  v_{t} \leftarrow 0.99v_{t-1}+0.01g_{t}^2
   $$
-So, the weight update follows the direction calculated in the current iteration, but 
-==#TODO: spiega meglio==
+* $\epsilon$ is used to improve numerical stability
+So, the weight update follows the direction calculated in the current iteration, but the variation is divided by a moving average of the squared gradient, for each weight.
 #### Further developments
 * **rmsprop + momentum**: [[#Adam]] is an example.
-* **rmsprop + Nesterov momentum**: it works best if the RMS of the recent gradients is used to divide the correction rather than the jump in the direction of accumulated corrections.
-* **rmsprop + adaptive learning rate**: ==#TODO==
-### Practical tips
-* small datasets (<10000) or more but with low redundancy → use full-batch GD, in combination with
-	* conjugate gradient, LBFGS,…
-	* ALR, rprop,…
-* big and/or redundant datasets → use mini-batch GD, in combination with:
-	* momentum
-	* rmsprop \[+ momentum]
-Of course, there is no simple and universal recipe: NNs differ a lot in general.
+* **rmsprop + Nesterov momentum**: it works better if the RMS of the recent gradients is used to divide the correction rather than the jump in the direction of accumulated corrections.
+* **rmsprop + adaptive learning rate**: ?
+
+> [!tip]
+> * small datasets (<10000) or more but with low redundancy → use full-batch GD, in combination with
+> 	* conjugate gradient, LBFGS,…
+> 	* ALR, rprop,…
+> * big and/or redundant datasets → use mini-batch GD, in combination with:
+> 	* momentum
+> 	* rmsprop \[+ momentum]
+> 
+> Of course, <u>there is no simple and universal recipe: NNs differ a lot in general.</u>
+
 ---
 Before going on, some notation.
 Let’s define the $g_{t,i}$ as the value of the gradient at step $t$, for parameter $i$, then the update step.
@@ -869,31 +888,35 @@ Adagrad is used in order to try to extract those (rare) features that are really
 ### Adadelta
 Adadelta tries to reduce the Adagrad aggressive and monotonically decreasing learning rate.
 It just restricts the amount of accumulated squares to a fixed size $w$ (window).
-==\[v1]==
+
 Moreover, instead of storing the $w$ previous squares, they are added to an accumulator that is updated with a decaying sum of gradients.
+#MEM 
 $$
 E[g^2]_{t}=\gamma E[g^2]_{t-1}+(1-\gamma)g_{t}^2
 $$
-New update again the update step:
-#MEM 
+New update again the update step *should be*:
 $$
 \begin{align}
-\theta_{t+1,i} &=\theta_{t,i}-\frac{\eta}{\sqrt{ E[g^2]_{t} + \epsilon }} \cdot g_{t,i} \\
+\theta_{t+1,i}
+&=\theta_{t,i}-\frac{\eta}{\sqrt{ E[g^2]_{t} + \epsilon }} \cdot g_{t,i} \\
 &=\theta_{t,i}-\frac{\eta}{ RMS[g_{t}] } \cdot g_{t,i}
 \end{align}
 $$
-However, the authors noted that the units in this update do not match: the update should have the same hypothetical units as the parameter.
-==\[v2]==
+However, <u>the authors noted that the units in this update do not match</u>: the update should have the same hypothetical units as the parameter.
+
 The accumulator is redefined, using the squared variation of the parameter (not of its gradient):
 #MEM
 $$
 \begin{align}
 E[\Delta\theta^2]_{t} &= \gamma E[\Delta\theta^2]_{t-1}+(1-\gamma)\Delta\theta^2 \\
-
+\theta_{t+1,i} &= \theta_{t,i}-\frac{RMS[\Delta\theta]_{t-1}}{ RMS[g_{t}] } \cdot g_{t,i}
 \end{align}
 $$
+==#TODO: sistemare pedici==
 #### rmsprop analogies
 ### Adam
+`adam` stands for **adaptive moment estimation**.
+
 In addition to storing an exponentially decaying average of past squared gradients $v_t$, it keeps an exponentially decaying average of past gradients (not squared).
 #MEM 
 $$
@@ -905,7 +928,6 @@ $$
 where:
 * $m_t$ is an estimation of the mean of the gradients (**first moment**)
 * $v_t$ is an estimation of the uncentered variance of the gradients (**second moment**)
-==#TODO: giustificare trasformazioni==
 #MEM 
 $$
 \beta_{1}=0.9, \quad m_{t-1}=0, \quad m_{t}=0.1 \cdot g_{t}
@@ -1743,12 +1765,13 @@ Now, several GNN variants will be discussed. Different variants are distinguishe
 
 ### Graph Convolutional Networks (GCN)
 https://distill.pub/2021/understanding-gnns/
+==#TODO==
 ### Graph Attention Networks (GAT)
-
+==#TODO==
 ### Graph Sample and Aggregate (GraphSAGE)
-
+==#TODO==
 ### Graph Isomorphism Network (GIN)
-
+==#TODO==
 # 14. Transformers
 > [!📚] 
 > [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
