@@ -915,7 +915,7 @@ $$
 ==#TODO: sistemare pedici==
 #### rmsprop analogies
 ### Adam
-`adam` stands for **adaptive moment estimation**.
+`Adam` stands for **adaptive moment estimation**.
 
 In addition to storing an exponentially decaying average of past squared gradients $v_t$, it keeps an exponentially decaying average of past gradients (not squared).
 #MEM 
@@ -928,6 +928,12 @@ $$
 where:
 * $m_t$ is an estimation of the mean of the gradients (**first moment**)
 * $v_t$ is an estimation of the uncentered variance of the gradients (**second moment**)
+
+> [!note] Uncentered variance
+> It is *uncetered* because the expected squared value of the gradient is not subtracted.
+> The definition of variance is:
+> $Var[X]=E[X^2]-E[X]^2$
+
 #MEM 
 $$
 \beta_{1}=0.9, \quad m_{t-1}=0, \quad m_{t}=0.1 \cdot g_{t}
@@ -938,18 +944,69 @@ $$
 $$
 $$
 \begin{align}
-\theta_{t+1,i} &=\theta_{t,i}-\frac{\eta}{\sqrt{ \hat{v_{t}} }+ \epsilon} \cdot \hat{m_{t}} \\
+\theta_{t+1} &=\theta_{t}-\frac{\eta}{\sqrt{ \hat{v_{t}} }+ \epsilon} \cdot \hat{m_{t}} \\
 \end{align}
 $$
-\[-] more parameters to tune
-\[-] prone to overfitting
-### AdamW
-==#TODO==
-### Lion
-It is a synthetic algorithm that is simpler and more memory-efficient than Adam. It does not calculate an adaptive rate for each parameter, so the magnitude calculated is the same for each parameter.
+Focus on the term $\dfrac{\hat{m_{t}}}{\sqrt{ \hat{v_{t}} + \epsilon }}$ and intuitively we can say:
+* constant (stable) gradients → $\hat{v_{t}} \rightarrow 0$ → bigger learning rate → faster learning
+* frequently changing (unstable) gradients → $\hat{v_{t}} \rightarrow 0$ → bigger learning rate → faster learning
 
-Lion was found by a search algorithm, built specifically for that purpose thanks to a symbolic representation of mathematical operations.
-==#TODO==
+Some limitation for Adam are:
+* using more parameters to tune;
+* have 3 buffers to keep, for each parameter;
+* have a model prone to overfitting.
+
+> [!note]
+> Deep Learnin frameworks often implement Adam combination with L2 regularization, to improve model generalization capabilities (see [[#AdamW]]).
+
+> [!tip]
+> In general, Adam is the optimizer which works better in most of the cases. However, a good practice is to try different optimizers and pick the one that performs better on that specific use-case.
+### AdamW
+> [!info]
+> https://medium.com/data-science/why-adamw-matters-736223f31b5d
+
+![[1*BOPnuP6VP0JVnJsoCdTo-g.webp | 400]]
+*violet: Adam with L2 regularization, the adam variant present in most framework implementations
+green: AdamW*
+
+`AdamW` (W stands for weight decay) is an improved version of Adam: weight decay is performed only after controlling the parameter-wise step size.
+
+The problem with Adam + L2 can be represented by exploding line 12 of the algorithm (without the green part):
+\[Adam + L2]
+$$
+x_{t} \leftarrow x_{t-1}-\alpha\frac{\beta_{1}m_{t-1}+(1-\beta_{1})(\nabla f_{t}
+\colorbox{yellow}{$+wx_{t-1}$}
+)}{\sqrt{ v_{t} } + \epsilon}
+$$
+The term $wx_{t-1}$ is at the numerator, so it is normalized by $\sqrt{ v_{t} }$ as well:
+large / fast changing weight (needs regularization) → $v_{t}$ large → regularization is heavily normalized (by $v_t$ indeed).
+
+\[AdamW]
+$$
+x_{t} \leftarrow x_{t-1}- \left( \alpha\frac{\beta_{1}m_{t-1}+(1-\beta_{1})(\nabla f_{t})}{\sqrt{ v_{t} } + \epsilon}
+\colorbox{yellow}{$+wx_{t-1}$}
+\right)
+$$
+
+AdamW yields better training loss and that the models generalize much better than models trained with Adam allowing the new version to compete with stochastic gradient descent with momentum.
+### Lion
+> [!info]
+> https://arxiv.org/abs/2302.06675
+
+`Lion` stands for evolved sign momentum.
+
+It is a synthetic algorithm that is simpler, faster and more memory-efficient than AdamW. It does not calculate an adaptive rate for each parameter, so the magnitude calculated is the same for each parameter.
+
+Lion was found by a search algorithm developed by the Google Brain team, built specifically for **algorithm discovery** (optimizers in this case) by using a symbolic representation of mathematical operations.
+The idea is to start the discovery from a **well-performing base**, using the **program length** to estimate the complexity of the solution. Of course, shorter programs are preferred because the are more generalizable.
+
+The **program discovery algorithm** is (very high level):
+1. define a population $P$ of algorithm (initially P=1, the well-known one)
+2. pick $T \le P$ at random
+3. pick the best performing one among the $T$ algorithms, denoted as the parent
+4. the parent is copied an mutated, producing a bunch of child algorithms, added to the population $P$
+5. goto 1.
+Lion was discovered by picking AdamW as the first member of the population.
 ## Hessian-free optimization
 ==#TODO==
 ### Newton’s method
