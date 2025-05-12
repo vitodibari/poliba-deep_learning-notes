@@ -67,7 +67,7 @@ However, given that also $y$’s are inputs, even *backpropagation towards y* is
 ### Forward and Backward propagation with diagrams
 
 ### Neural Networks with Block diagrams
-![Screenshot 2024-08-05 alle 20.00.28.png](assets//Screenshot_2024-08-05_alle_20.00.28.png)
+![Screenshot 2024-08-05 alle 20.00.28.png](assets/Screenshot_2024-08-05_alle_20.00.28.png)
 
 ## Machine Learning vs Deep Learning
 
@@ -385,9 +385,8 @@ It is not generally used as activation function, but as a component in other los
 # 5. Loss Functions
 Here are listed some of the most used losses in Deep Learning.
 Specific loss functions are used for specific tasks, such as regression and classification ones.
-## Regression tasks
-### L1 and L2 losses
-#### Mean Squared Error (L2 loss)
+## Regression losses
+### Mean Squared Error (L2 loss)
 #MEM
 [![How to Calculate L2/MSE Loss in PyTorch? | Liberian Geek|300](https://www.liberiangeek.net/
 This function gives the mean squared error (squared L2 norm) between each element in the input $x$ and target $y$.
@@ -406,7 +405,7 @@ mean(L) & \text{if reduction = "mean"} \\
 sum(L) & \text{if reduction = "sum"} \\
 \end{cases}
 $$
-#### Mean Absolute Error (L1 loss)
+### Mean Absolute Error (L1 loss)
 #MEM 
 This measures the mean absolute error (MAE) between each element in the input $x$ and target $y$.
 
@@ -423,7 +422,7 @@ MAE can be also intended as **reduced** (a scalar is returned) using `mean` or `
 
 > [!NOTE] ⚠️
 > L1 loss is not differentiable at the bottom 0.
-#### Smooth Mean Absolute Error (smooth L1 loss)
+### Smooth Mean Absolute Error (smooth L1 loss)
 $$
 l(x,y)=\frac{1}{n} \sum_{i} z_{i}
 \quad \text{with} \quad
@@ -439,16 +438,15 @@ It is known also as **Huber Loss** or **Elastic Network**.
 
 > [!NOTE] 💡
 > Often used in computer vision due to its robustness against outliers.
-#### L1 vs L2 for Computer Vision
+### L1 vs L2 for Computer Vision
 It is better to use L1 because returns more sharper images.
-## Classification tasks
+## Classification losses
 ### Negative Log Likelihood Loss
-==#TODO: capire meglio==
 > [!info]
 > https://towardsdatascience.com/cross-entropy-negative-log-likelihood-and-all-that-jazz-47a95bd2e81/
 
 It is usually used as loss function during training in classification problems with C classes.
-Mathematically, <u>the input of NLLLoss should be (log) likelihoods</u> (like [[#LogSoftmax]]).
+Mathematically, <u>the input of NLLLoss should be (log) likelihoods</u> (like the output of [[#LogSoftmax]]).
 
 The optional parameter *weight* is a vector of values used to assign a weight to each class. Particularly useful when an unbalanced training set is used.
 
@@ -460,8 +458,8 @@ l_{n}=-w_{y_n}x_{n,y_{n}}, \quad
 w_{c}=\mathrm{weight}[c] \cdot 1 \{c \ne \text{ignore\_index} \}
 $$
 where:
-* $x_{n,y_{n}}$ ==#TODO==
-* \[optional] $\mathrm{weight}$ is a 1D Tensor assigning weight to each of the classes ($\mathrm{weight}[c]$ is the weight assigned to the $c$-th class). This is particularly useful when you have an unbalanced training set;
+* $x_{n,y_{n}}$ is the predicted log probability of the true class $y_n$, for the $n$-th sample
+* \[optional] $\mathrm{weight}$ is a 1D Tensor assigning weight to each of the classes ($\mathrm{weight}[c]$ is the weight assigned to the $c$-th class). This is particularly useful when you have an unbalanced training set.
 MAE can be also intended as **reduced** (a scalar is returned):
 $$
 l(x,y)=
@@ -472,6 +470,8 @@ l(x,y)=
 $$
 > [!tip]
 > Obtaining log-probabilities in a neural network is easily achieved by adding a [[#LogSoftmax]] layer in the last layer of your network. You may use [[#CrossEntropyLoss]] instead, if you prefer not to add an extra layer.
+
+To make things more clear, see the exercise in [[#CrossEntropyLoss]].
 #### Weights & Imbalanced Classes
 The **weight vector** $\mathrm{weight}$ is useful when data classes have different frequencies (e.g. the
 frequency of the common flu is much higher than the lung cancer).
@@ -482,7 +482,7 @@ Basically, we put samples of each class in a different buffer. Then generate eac
 samples to use, <u>we iterate through the smaller buffer from the beginning again until every sample of the larger class is used.</u>
 <u>This way gives us equal frequency for all categories by going through those circular buffers.</u>
 
-> [!warning]
+> [!note]
 > The main idea is always to use all the available data.
 
 Following the *frequency equalization* process leads to the problem that our NN model wouldn’t know the relative frequency of the actual samples. To solve that, we can <u>fine-tune the system by
@@ -492,11 +492,23 @@ to the biases at the output layer to the data frequency.
 > [!info]
 > https://youtu.be/Pwgpl9mKars
 
-==#TODO==
 It just combines [[#LogSoftmax]] with [[#Negative Log Likelihood Loss]].
 
-### Adaptive Log Softmax with Loss
-It is basically an efficient softmax approximation of softmax for large number of classes (e.g. millions of classes). It implements tricks to improve the speed of the computation.
+As you can see in the example, logits (raw output of the classifier) are transformed in probabilities by the softmax $[0,1]$, then by log $[0,-\infty]$.
+==#TODO: integra parte sulla saturazione dei gradienti==
+
+The loss can be calculated on a prediction $x$ w.r.t. each class $c$ (usually calculated on the true class, like in the exercise below):
+$$
+l(x,c)=
+w_{c}\left( -\log \left( \dfrac{e^{x_{c}}}{\sum_{j}e^{x_{j}}}\right)\right)
+$$
+where:
+* \[optional] $w_{c}$ assigns a weight to the $c$-th class
+#### Physical interpretation
+==#TODO==
+
+**Exercise**
+![[Esercizi-2 1.jpg]]
 ### Binary Cross Entropy Loss
 #MEM
 BCE Loss can be adopted for binary classification problems only.
@@ -507,20 +519,6 @@ l_{n}=-w_{n}[y_{n}\log x_{n}+(1-y_{n})\log(1-x_{n})]
 $$
 Where $x_{n}$ and $y_{n}$ are assumed as probabilities, so they are strictly between 0 and 1.
 And $x$ and $y$ are probability distributions.
-### Kullback-Leibler Divergence Loss
-> [!info]
-> https://youtu.be/SxGYPqCgJWM
-
-#MEM
-$$
-l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
-\quad \text{with} \quad
-l_{n}=y_{n}\left( \log \frac{y_{n}}{x_{n}} \right)
-$$
-To avoid underflow issues when computing this quantity, this loss expects the argument `input` in the log-space.
-
-> [!NOTE] ⚠️
-> It has the disadvantage that it is not merged with a softmax or log-softmax so it may have numerical stability issues due to floating point operations.
 ### Binary Cross Entropy Loss with Logits
 This loss combines a Sigmoid layer and the BCELoss in one single class. 
 $$
@@ -530,19 +528,57 @@ l_{n}=-w_{n}[y_{n}\log \sigma(x_{n})+(1-y_{n})\log(1-\sigma(x_{n}))]
 $$
 > [!NOTE] ⚠️
 > This version is more numerically stable than just using a plain Sigmoid followed by a BCELoss.
+## Adaptive Log Softmax with Loss
+It is basically an efficient softmax approximation of softmax for large number of classes (e.g. millions of classes). It implements tricks to improve the speed of the computation.
+## Kullback-Leibler Divergence Loss
+> [!info]
+> https://youtu.be/SxGYPqCgJWM
+
+The Kullback-Leibler Divergency measures the similarity between a probability distribution w.r.t a reference one.
+It is **non-symmetric**, so if the arguments (the two distributions) are swapped, the result changes.
+#MEM
+$$
+l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
+\quad \text{with} \quad
+l_{n}=y_{n}\left( \log \frac{y_{n}}{x_{n}} \right)
+$$
+where:
+* $x_n$: is the tensor of the $n$-th sample (from input distribution)
+* $y_n$: is the tensor of the $n$-th label (from output distribution)
+To avoid underflow issues when computing this quantity, this loss expects the argument `input` in the log-space.
+
+> [!NOTE] ⚠️
+> It has the disadvantage that <u>it is not merged with a softmax or log-softmax so it may have numerical stability issues due to floating point operations.</u>
+## Ranking Losses
+> [!info]
+> https://gombru.github.io/2019/04/03/ranking_loss/
+
+Ranking Losses are used to predict <u>relative distances between inputs</u> (**metric learning**).
+
+**Example**
+A CNN can be trained to infer if two face images belong to the same person or not, instead of using one classifier trained on each person of the dataset.
+
+![[pairwise_ranking_loss_faces.png|400]]
+*Example of pairwise ranking loss*
+
+![[triplet_loss_faces.png|400]]
+*Example of triplet ranking loss*
 ### Hinge Embedding Loss
-Measures the loss given an input tensor $x$ and a labels tensor $y$ (containing 1 or -1).
+==#TODO: approfondire funzionamento==
 $$
 l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
 \quad \text{with} \quad
 l_{n}=
 \begin{cases}
 x_{n} & \text{if } y_{n}=1 \\
-\max(0,margin-x_{n}) & \text{if } y_{n}=-1
+\max(0,\delta-x_{n}) & \text{if } y_{n}=-1
 \end{cases}
 $$
+where:
+* $x_{n}$ is the input tensor ($n$-th sample of the minibatch)
+* $y_{n}$ is the label tensor that contains 1 or -1 values ($n$-th sample of the minibatch)
+* $\delta$ is the margin
 It can be also intended as reduced (a scalar is returned) using `mean` or `sum`.
-==#TODO: vedere meglio==
 ### Margin Ranking Loss
 ==#TODO==
 ### Triplet Margin Loss
@@ -551,8 +587,34 @@ It can be also intended as reduced (a scalar is returned) using `mean` or `sum`.
 ==#TODO==
 ### Multi-Class Hinge Loss
 ==#TODO==
-### Cosine Embedding Loss
-==#TODO==
+## Cosine Embedding Loss
+![[Pasted image 20250511193407.png|500]]
+This type of loss is typically used when **embeddings** are involved: vectorial representations of input data (text, audio, images, etc).
+The idea is to use the [[#Cosine Similarity]] to calculate a loss to train the model. 
+$$
+l_{x,y}=
+\begin{cases}
+1- \cos(x_{1},x_{2}) & \text{if } y=1\\
+\max(0,\cos(x_{1},x_{2})) - \delta) & \text{if } y=-1
+\end{cases}
+$$
+where:
+* $x_{1}, x_{2}$ are the input embeddings (tensors)
+* $y$ is the scalar label (1 or -1 value)
+* $\delta$ is the margin
+	* default: $0$
+	* suggested: $[0,0.5]$
+	* domain: $[-1,1]$
+### Cosine Similarity
+The cosine similarity measures how two embeddings are similar to each other, by using the **normalized squared euclidian distance**: gives the <u>squared distance between two vectors where their lengths have been scaled to have a unit norm.</u>
+This is helpful when the direction of the vector is meaningful, but the magnitude is not. We don’t care about the magnitude.
+$$
+\mathrm{similarity}=\cos(x_{1},x_{2})=\frac{x_{1} \cdot x_{2}}{|x_{1}||x_{2}|}
+$$
+where output is:
+* $0 < \mathrm{similarity} < 1$
+* $1$: when $x_1$ and $x_2$ have the same direction (never happens in practice)
+* $0$: when $x_1$ and $x_2$ have opposite directions (never happens in practice)
 # 6. Optimization
 > [!NOTE] 📚
 > https://medium.datadriveninvestor.com/overview-of-different-optimizers-for-neural-networks-e0ed119440c3
@@ -974,8 +1036,8 @@ green: AdamW*
 The problem with Adam + L2 can be represented by exploding line 12 of the algorithm (without the green part):
 \[Adam + L2]
 $$
-x_{t} \leftarrow x_{t-1}-\alpha\frac{\beta_{1}m_{t-1}+(1-\beta_{1})(\nabla f_{t}
-\colorbox{yellow}{$+wx_{t-1}$}
+\theta_{t,i} \leftarrow \theta_{t-1,i}-\alpha\frac{\beta_{1}m_{t-1}+(1-\beta_{1})(\nabla f_{t,i}
+\colorbox{yellow}{$+w \theta_{t-1,i}$}
 )}{\sqrt{ v_{t} } + \epsilon}
 $$
 The term $wx_{t-1}$ is at the numerator, so it is normalized by $\sqrt{ v_{t} }$ as well:
@@ -983,8 +1045,8 @@ large / fast changing weight (needs regularization) → $v_{t}$ large → regula
 
 \[AdamW]
 $$
-x_{t} \leftarrow x_{t-1}- \left( \alpha\frac{\beta_{1}m_{t-1}+(1-\beta_{1})(\nabla f_{t})}{\sqrt{ v_{t} } + \epsilon}
-\colorbox{yellow}{$+wx_{t-1}$}
+\theta_{t,i} \leftarrow \theta_{t-1,i}- \left( \alpha\frac{\beta_{1}m_{t-1,i}+(1-\beta_{1})(\nabla f_{t,i})}{\sqrt{ v_{t,i} } + \epsilon}
+\colorbox{yellow}{$+w\theta_{t-1,i}$}
 \right)
 $$
 
@@ -1017,8 +1079,12 @@ Lion was discovered by picking AdamW as the first member of the population.
 > [!NOTE] 📚
 > https://youtu.be/tNIpEZLv_eg
 > https://youtu.be/yXOMHOpbon8
+> https://ahmedbadary.github.io/work_files/research/dl/concepts/norm_methods
 
 Even it is counter-intuitive, normalization layers perform a **standardization** task: the idea is to <u>change the distribution of the values to a target one with desired mean and standard deviation</u>; instead, normalization means force values to a new range.
+
+Normalization Layers allow the **whitening** of intermediate layers: values are redistributed to a distribution that provides faster convergence and more stable training.
+This distribution isn’t well known, it learned (see below).
 ## Batch Normalization
 \[NO] **Naïve way**
 Train on a batch → update weights → normalization.
@@ -1026,50 +1092,78 @@ Won’t work because GD algorithm doesn’t know about whitening process, on tra
 
 \[NO] **”Mathematically correct” way**
 In order to provide proper whitening, I need to know the entire dataset so i precisely now how to rescale weights. This is impracticable.
-
 ### Implementation
 The (correct) idea is to put normalization layers between all the hidden layers of the NN, in order to <u>prevent weights from escaping the stable values range</u>.
 ![[Pasted image 20250406125926.png|500]]
 
 Each component is normalized individually, following the formula below. Of course, normalization is made over mini-batches, so this is an approximation of the “mathematically correct” way.
-However, <u>there are cases where feature works better if not normalized; this is why new learnable parameters $\gamma$ and $\beta$ are introduced: they can de-normalize features</u>.
+However, unlike _inputs_, we might not want to force the activations to have mean 0 and variance 1; this is why new learnable parameters $\gamma$ and $\beta$ are introduced.
 Those extra parameters are dedicated to each weight and (of course) shared among each mini-batch.
 ![[Pasted image 20250406170754.png|400]]
 
 Usually, BN layers are placed between linear layer and activation function.
 ![[Pasted image 20250406191916.png|500]]
 ### Why does BN work?
-* \[PROVED WRONG by [MIT](https://arxiv.org/pdf/1805.11604)] BN was originally proposed to reduce **Covariate Shift**. It is the effect for which the distribution of inputs to a layer in the network changes due to an update of parameters of the previous layers. Of course, covariate shift is not good: the later layers have to keep adapting to the change of the type of distribution;
-* <u>Reduces exploding/vanishing gradients effect because all the activations layers becomes roughly normal distributed.</u> Otherwise, lower activation in i-th layer could produce even lower activations in i+1-th and so on;
+* \[PROVED WRONG by [MIT](https://arxiv.org/pdf/1805.11604)] BN was originally proposed to reduce **Covariate Shift**: the effect for which the distribution of inputs to a layer in the network changes due to an update of parameters of the previous layers. Of course, covariate shift is not good: the later layers have to keep adapting to the change of the type of distribution;
+* <u>Reduces exploding/vanishing gradients effect because all the activations layers becomes roughly normal distributed.</u> Otherwise, lower activation in $i$-th layer could produce even lower activations in $i+1$-th and so on;
 * Makes <u>training more resilient to parameters’ scale</u>: BN is **scale-invariant**
-  ==#TODO: capire meglio?==
   $$
   BN((aW)u)=BN(Wu) \Rightarrow 
   \frac{\partial BN((aW)u)}{\partial u} = \frac{\partial BN(Wu)}{\partial u}
   $$
-* <u>Reduces demand for regularization</u>;
+* <u>Reduces demand for regularization</u>
 * <u>Allows larger learning rates → faster training</u> (even if more computation is required for the single-iteration)
 * <u>Allows training with saturating activations</u>: it keeps activations in desired ranges
 * Mean and standard deviation <u>estimations are noisy due to the randomness of the data → better generalization</u>
-## Normalization Operations (for CNNs)
+## Normalization Operations
 Normalization takes into account a bunch of values to average. 
 For scalar values, i generally average all the mini-batch.
 <u>When mini-batches are made up by images, i can consider to average just “a part” of the mini-batch.</u>
 
 Here some normalization operations for mini-batches of $N$ images $H \times W$ sized with $C$ channels.
 ### Batch norm
-The normalization is applied only over one channel of the input.
+#Recall of the first part of this chapter.
+
 ![[Pasted image 20250406201355.png|200]]
+It <u>normalizes activations in a network across the mini-batch, for each feature</u>.
 It is the first and most well-known version.
+$$
+\begin{align}
+\mu_{i} &= \frac{1}{n} \sum_{j=1}^n x_{ij} \\
+\sigma^2_{i} &= \frac{1}{n} \sum_{j=1}^n (x_{ij}-\mu_{i})^2 \\
+\hat{x_{ij}} &= \frac{x_{ij}-\mu_{i}}{\sqrt{ \sigma^2_{i} + \epsilon }}
+\end{align}
+$$
+where:
+* $m$ is the number of samples
+* $n$ is the number of dimensions
+* $x_{ij}$ is the $j$-th input of the $i$-th sample
 ### Layer norm
-The normalization is applied within one image across all channels.
 ![[Pasted image 20250406201604.png|200]]
+While the previous operation was normalizing the inputs across batches like BN, LN <u>normalizes the inputs across the features</u>:
+$$
+\begin{align}
+\mu_{j} &= \frac{1}{m} \sum_{j=1}^mx_{ij} \\
+\sigma^2_{j} &= \frac{1}{m} \sum_{j=1}^m (x_{ij}-\mu_{j})^2 \\
+\hat{x_{ij}} &= \frac{x_{ij}-\mu_{j}}{\sqrt{ \sigma^2_{j} + \epsilon }}
+\end{align}
+$$
 ### Instance norm
-The normalization is applied only over one image and one channel.
+![[Pasted image 20250512154844.png|200]]
+<u>Similar to the LN, but it’s applied over each image’s channel.</u>
+This operation is specific to images, used in neural style transfer tasks to make the network agnostic to the contrast of the original images.
 ### Group norm
-The normalization is applied only over one image and across multiple channels.
-A group size of 32 is recommended.
-==#TODO: ma che cazzo vor dì.== Copiato da https://eliatorre.com/Computational+Neural+Cognition/NYU+-+Deep+Learning/Extracted+Topics+-+NYU+Deep+learning/Week+5/Normalization+Layers.
+![[Pasted image 20250512155948.png|200]]
+This operation is image-specific as well.
+
+<u>The normalization is applied over groups of channels for each training example. </u>It can be thought as being half way between [[#Layer norm]] and [[#Instance norm]]:git
+
+- if all the channels are put into a single group, it becomes LN
+- if all the channels are put a different group, it becomes IN
+
+> [!note]
+> A group size of 32 is recommended.
+
 ## Practical tips
 * use pytorch implementations: `torch.nnBatchNorm2d`, `torch.nn.GroupNorm`
 * GroupNorm is recommended over BatchNorm: it’s more stable, theoretically simpler
