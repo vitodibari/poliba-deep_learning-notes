@@ -432,7 +432,7 @@ z_{i}
 |x_{i}-y_{i}|-0.5 & \text{otherwise} \\
 \end{cases}
 $$
-![[1*3bR2Pe64jdVht0LbqhssNA.png|400]]
+![[13bR2Pe64jdVht0LbqhssNA.png|400]]
 It basically switches from L1 to L2 when the (element-wise) error falls below 1.
 It is known also as **Huber Loss** or **Elastic Network**.
 
@@ -564,7 +564,6 @@ A CNN can be trained to infer if two face images belong to the same person or no
 ![[triplet_loss_faces.png|400]]
 *Example of triplet ranking loss*
 ### Hinge Embedding Loss
-==#TODO: approfondire funzionamento==
 $$
 l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
 \quad \text{with} \quad
@@ -575,8 +574,10 @@ x_{n} & \text{if } y_{n}=1 \\
 \end{cases}
 $$
 where:
-* $x_{n}$ is the input tensor ($n$-th sample of the minibatch)
-* $y_{n}$ is the label tensor that contains 1 or -1 values ($n$-th sample of the minibatch)
+* $x_{n}$ represents a pairwise distance metric ($n$-th one) between two samples of the dataset
+* $y_{n}$ is the label tensor that contains 1 or -1 values
+	* 1: two input samples are similar
+	* -1: two input samples are not similar
 * $\delta$ is the margin
 It can be also intended as reduced (a scalar is returned) using `mean` or `sum`.
 ### Margin Ranking Loss
@@ -820,7 +821,7 @@ w_{k+1} &= w_k-\gamma p_{k+1}
 \end{align}
 $$
 ![[Pasted image 20250403223255.png|400]]
-![[1*_Q1plMUkXfLPTRCCTRg36g.gif|400]]
+![[1_Q1plMUkXfLPTRCCTRg36g.gif|400]]
 *Red: vanilla momentum. Blue: NAG.*
 ### Why does momentum work?
 * **Acceleration(?)**: NAG guarantees accelerated performances for convex problems only, so not for NNs. Furthermore, acceleration does not work well with noise, so it does not work well with SGD (*noisy* approach)
@@ -1070,6 +1071,9 @@ The **program discovery algorithm** is (very high level):
 5. goto 1.
 Lion was discovered by picking AdamW as the first member of the population.
 ## Hessian-free optimization
+> [!info]
+> https://youtu.be/XxQ4hgcKDlY?list=PLLssT5z_DsK_gyrQ_biidwvPYCRNGI3iv
+
 ==#TODO==
 ### Newton’s method
 ==#TODO==
@@ -1156,8 +1160,7 @@ This operation is specific to images, used in neural style transfer tasks to mak
 ![[Pasted image 20250512155948.png|200]]
 This operation is image-specific as well.
 
-<u>The normalization is applied over groups of channels for each training example. </u>It can be thought as being half way between [[#Layer norm]] and [[#Instance norm]]:git
-
+<u>The normalization is applied over groups of channels for each training example. </u>It can be thought as being half way between [[#Layer norm]] and [[#Instance norm]]:
 - if all the channels are put into a single group, it becomes LN
 - if all the channels are put a different group, it becomes IN
 
@@ -1167,6 +1170,7 @@ This operation is image-specific as well.
 ## Practical tips
 * use pytorch implementations: `torch.nnBatchNorm2d`, `torch.nn.GroupNorm`
 * GroupNorm is recommended over BatchNorm: it’s more stable, theoretically simpler
+* ==#TODO: last slide==
 # 8. Convolutional Neural Networks
 Regular NNs don’t scale well when using images.
 
@@ -1592,7 +1596,7 @@ It is possibile to impose a **sparsity constraint** on the hidden units.
 A neuron is said to be “active” (or as “firing”) if its output value is close to 1, or as being “inactive” if its output value is close to 0.
 The sparsity constraint pushes the neurons to be inactive most of the time.
 
-![[1*k9RX5_kDYt2kG0u9ZREu5w.webp | 500]]
+![[1k9RX5_kDYt2kG0u9ZREu5w.webp | 500]]
 
 In this way, the autoencoder will still discover interesting structure in the data, even if the number of hidden units is large.
 
@@ -1638,7 +1642,7 @@ The training process becomes:
 4. compute the reconstruction error ([[#VAE Loss]]))
 5. backpropagate
 ### VAE Loss
-![[1*kXiln_TbF15oVg7AjcUEkQ.webp]]
+![[1kXiln_TbF15oVg7AjcUEkQ.webp]]
 The objective is always to minimize the loss, so the system must minimize:
 * the **reconstruction term** → optimizes the encoding-decoding performance
 * the **regularization term** → the latent space is shaped on a standard normal distribution. It is the KL divergence between the encoder’s distribution and $\mathcal{N}(0,1)$.
@@ -1766,7 +1770,6 @@ $$
 \}
 $$
 # 13. Graph Machine Learning
-==#TODO: verificare che siano state riportate tutte le formule==
 > [!📚]
 > https://youtu.be/zCEYiCxrL_0
 > https://gnn.seas.upenn.edu/
@@ -1967,7 +1970,7 @@ In order to apply self-attention, three vectors for each input embedding must be
   ==#TODO: meglio==
 * **value vector**: <u>represents the actual content that will be added (mathematically) to the current word if the other word selected is considered relevant</u> for the current one.
 All these vectors live in a smaller latent space than the embeddings’ one, but big enough to do the job. The matrices $W_Q$, $W_K$ and $W_V$ are used to map the embeddings in the lower space. All the matrices are learned during training process.
-![[0*snLiYlonhDZx-Tun.png|400]]
+![[0snLiYlonhDZx-Tun.png|400]]
 Self-attention is calculated for each token w.r.t the other ones, so a square matrix is expected.
 For each couple, a score is calculated using the formula:
 #MEM 
