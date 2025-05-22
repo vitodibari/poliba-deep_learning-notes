@@ -92,7 +92,7 @@ Mini-batched are often used to enable parallelization.
 > - use regulation (L1 or L2 or a combination)
 > - use [[#Dropout]] layers
 > - use cross-entropy loss for classification tasks
-# 2. Basic Architectures
+# 1. Basic Architectures
 ==#TODO ==
 ## Multiplicative Modules
 ==#TODO ==
@@ -102,7 +102,7 @@ Mini-batched are often used to enable parallelization.
 ==#TODO ==
 ### Shared Weights
 ==#TODO ==
-# 3. Learning Representations
+# 2. Learning Representations
 
 > ![[Example-of-application-of-the-Covers-theorem-Linear-inseparable-data-become-separable.ppm.png|400]]
 > The probability that a dichotomy over P points in N dimensions is linearly separable goes to zero as P gets larger than N.
@@ -158,7 +158,7 @@ Some examples can be:
 ## Why does deep architecture work?
 <u>They trade space for time</u>: better in case of machines with limited memory, like computers.
 In brief, more layers → more computation, less hardware.
-# 4. Activation Functions
+# 3. Activation Functions
 Activation functions are fundamental in deep neural networks: they are the <u>founding block that allows the non-linear behavior of the models</u>.
 
 There exists a variety of activation functions, that can be grouped in:
@@ -382,7 +382,7 @@ $$
 \mathrm{LogSoftmax}(x_{i})=\log \left( \frac{e^{x_{i}}}{\sum_{j}e^{x_{j}}} \right)
 $$
 It is not generally used as activation function, but as a component in other loss functions.
-# 5. Loss Functions
+# 4. Loss Functions
 Here are listed some of the most used losses in Deep Learning.
 Specific loss functions are used for specific tasks, such as regression and classification ones.
 ## Regression losses
@@ -616,7 +616,8 @@ where output is:
 * $0 < \mathrm{similarity} < 1$
 * $1$: when $x_1$ and $x_2$ have the same direction (never happens in practice)
 * $0$: when $x_1$ and $x_2$ have opposite directions (never happens in practice)
-# 6. Optimization
+# 5. Optimization
+
 > [!NOTE] 📚
 > https://medium.datadriveninvestor.com/overview-of-different-optimizers-for-neural-networks-e0ed119440c3
 > https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
@@ -1079,7 +1080,7 @@ Lion was discovered by picking AdamW as the first member of the population.
 ==#TODO==
 ### Conjugate gradient
 ==#TODO==
-# 7. Normalization Layers
+# 6. Normalization Layers
 > [!NOTE] 📚
 > https://youtu.be/tNIpEZLv_eg
 > https://youtu.be/yXOMHOpbon8
@@ -1171,7 +1172,7 @@ This operation is image-specific as well.
 * use pytorch implementations: `torch.nnBatchNorm2d`, `torch.nn.GroupNorm`
 * GroupNorm is recommended over BatchNorm: it’s more stable, theoretically simpler
 * ==#TODO: last slide==
-# 8. Convolutional Neural Networks
+# 7. Convolutional Neural Networks
 Regular NNs don’t scale well when using images.
 
 **Example: FC NN with CIFAR-10**
@@ -1275,7 +1276,7 @@ In this kind of pooling, the output is the average calculated on values picked u
 ## CIFAR-10 Arch
 #MEM 
 \[(CONV - RELU)\*N - POOL?]\*M - (FC - RELU)\*K - SOFTMAX
-# 9. Recurrent Neural Networks
+# 8. Recurrent Neural Networks
 ## Sequence Modeling Problem
 It is the kind of problem where we want to learn from a sequence of input data.
 
@@ -1472,7 +1473,7 @@ Of course, this works iff the sequence is already known.
   In this case, the vanilla RNN approach causes a bottleneck when passing through the state that encodes the phrase to be translated.
   A solution could be adopting an **attention mechanism**.
   ![[Pasted image 20250408213830.png|400]]
-# 10. Improve Generalization
+# 9. Improve Generalization
 > [!NOTE] 📚
 > * https://youtu.be/MbpaeKYMXVk
 > * https://youtu.be/Ukb5yqeF1po
@@ -1558,7 +1559,7 @@ Of course, it’s very different from averaging all the dropped out models, but 
 > [!💡] 
 > *If your deep neural net is not overfitting you should be using a bigger one!*
 
-# 11. Autoencoders
+# 10. Autoencoders
 > [!📚] 
 > https://www.youtube.com/watch?v=-TPFg-RG-KY&pp=ygUXdmFyaWF0aW9uYWwgYXV0b2VuY29kZXI%3D
 
@@ -1685,10 +1686,10 @@ $$
 ==#TODO: spiegare meglio==
 However, given that the integral at the denominator is intractable, an approximation is required, like **variational inference**.
 ### Variational inference
+==#TODO==
 ### Backpropagation
-
-
-# 12. Generative Adversarial Networks
+==#TODO==
+# 11. Generative Adversarial Networks
 > [!📚]
 > https://www.youtube.com/watch?v=Sw9r8CL98N0&pp=ygUfZ2VuZXJhdGl2ZSBhZHZlcnNhcmlhbCBuZXR3b3Jrcw%3D%3D
 
@@ -1769,7 +1770,7 @@ $$
 -E_{x \sim Data} \log D(x) - E_{z \sim Noise} \log(1-D(G(z)))
 \}
 $$
-# 13. Graph Machine Learning
+# 12. Graph Machine Learning
 > [!📚]
 > https://youtu.be/zCEYiCxrL_0
 > https://gnn.seas.upenn.edu/
@@ -1793,7 +1794,7 @@ can contain info about: edge identity, edge weight
 can contain info about: number of nodes, longest path
 ![image.png|400](assets/image%207.png)
 There are different ways to represent graph connections, each of them suitable for different tasks.
-## Represent Graphs
+## How to represent Graphs
 ### Adjacency Matrix
 An alternative way of representing a graph using an **adjacency matrix**: all nodes are listed on both matrix axis and then a cell is selected (entry) when both nodes share an edge.
 
@@ -1801,132 +1802,249 @@ As shown in the image, a big problem is that there are many adjacency matrices t
 ![Screenshot 2024-08-19 alle 11.11.19.png|500](assets/Screenshot_2024-08-19_alle_11.11.19.png)
 ### Adjacency List
 Another way of representing graphs is by using **adjacency lists** (different from adjacency matrices). This is more memory-efficient.
-![IMG_1AF729ADED7B-1.jpeg|500](assets/IMG_1AF729ADED7B-1.jpeg)
-- Images as graphs
-    
-    ![image.png|500](assets/image%208.png)
-    
-    Images can be represented as graphs where each pixel is a node where the RGB value is encoded and it’s linked to its 8 neighbors via an edge (see last image).
-    Moreover, adjacency matrices can be used.
-    
-- Text as graphs
-    
-    ![image.png|500](assets/image%209.png)
-    
-- Molecules as graphs
-    
-    ![image.png|500](assets/image%2010.png)
-    
-- Social Networks as graphs
-    
-    ![image.png|500](assets/eba5cc85-91da-4deb-a66e-b7d14bec4c61.png)
-    
-Graphs can be used to accomplish different type of prediction tasks such as:
-## Graph-level tasks
-When the prediction is about a graph-level property.
 
-Examples
-- molecules: what the molecule smells like
-- images: associate labels to an image
-- text: sentiment analysis
-## Node-level tasks
-When the prediction is about a node-level property.
-- Zach’s karate club: given a social network split in two factions, predict wether a given member will be loyal to first or second faction
-- images: image segmentation, so predict the label associated to the individual pixel
-- text
-Node-level tasks are analogous to image segmentation ones.
-## Edge-level tasks
-- images: predict relationships between image items (nodes)
-- **Link prediction**: predicts whether an edge exists between two particular nodes. (e.g.: social recommendation, item recommendation, knowledge graph completion, etc.)
+**Example**
+![IMG_1AF729ADED7B-1.jpeg|500](assets/IMG_1AF729ADED7B-1.jpeg)
+### Graph uses
+- Images as graphs
+  ![image.png|500](assets/image%208.png)
+  Images can be represented as graphs where each pixel is a node where the RGB value is encoded and it’s linked to its 8 neighbors via an edge (see last image).
+  Moreover, adjacency matrices can be used.
+
+- Text as graphs
+  ![image.png|500](assets/image%209.png)
+- Molecules as graphs
+  ![image.png|500](assets/image%2010.png)
+- Social Networks as graphs
+  ![image.png|500](assets/eba5cc85-91da-4deb-a66e-b7d14bec4c61.png)
+Graphs can be used to accomplish different type of prediction tasks such as:
+* **Graph-level tasks**: the prediction is about a graph-level property.
+  **Examples**
+	- molecules: what the molecule smells like
+	- images: associate labels to an image
+	- text: sentiment analysis
+- **Node-level tasks**: the prediction is about a node-level property.
+  Node-level tasks are analogous to image segmentation ones.
+  **Examples**
+	- Zach’s karate club: given a social network split in two factions, predict wether a given member will be loyal to first or second faction
+	- images: image segmentation, so predict the label associated to the individual pixel
+	- text
+- **Edge-level tasks**: the prediction is about a edge-level property.
+  **Examples**
+	- images: predict relationships between image items (nodes)
+	- **Link prediction**: predicts whether an edge exists between two particular nodes. (e.g.: social recommendation, item recommendation, knowledge graph completion, etc.)
 ## Challenges of computing on Graphs
 - **Lack of Consistent Structure**: each node can have different incoming/outgoing edges; each node/edge can have different type; each edge can have different strength; etc.
 - **Node-Order Equivariance**: some representation need nodes to be represented as an array. Arrays are ordered but nodes cannot be always ordered in a unique way. So algorithms where graphs are used must be node-order equivariant:
     - they DO NOT depend on the ordering of nodes
-    - different permutation of nodes must have same outcome
+    - <u>different permutation of nodes must have same outcome</u>
 - **Scalability**: graphs can get really big. However, in practice, they tend to be **sparse**, so the number of edges grows linearly w.r.t. the number of nodes. 
 Moreover, most algorithms use significantly fewer parameters than the size of the graphs they operate on.
 ## Graph Neural Network
-> [!📚]
+> [!info]
 > https://distill.pub/2021/gnn-intro/
+> https://distill.pub/2021/understanding-gnns/
 
 GNNs are neural networks used to operate on data organized in as graph(s). GNNs work with latent representations of nodes/edges/graph, called **embeddings**.
 
-All GNNs approaches use the same framework: “**message passing neural network**” (MPNN). where messages (aggregations of embeddings) are exchanged between nodes via edges.
+All GNNs approaches use the same framework of a “**message passing neural network**” (MPNN): <u>messages (aggregations of embeddings) are exchanged between nodes via edges</u>.
 
-The main idea is to have graphs made up of nodes whose embedding is given by the node itself and its context inside the whole graph. MPNN allows nodes to exchange information with their neighboring nodes and aggregate that information to update their own representations.
+The main idea is to have graphs made up of nodes whose embedding is given by the node itself and its surrounding context, inside the whole graph. MPNN allows nodes to exchange information with their neighboring nodes and aggregate that information to update their own representations.
+
 **Information flow** follows the edges direction:
+- if the edge is **unidirectional**, then messages will follow that direction
+- if the edge is **bidirectional**, then messages will follow both directions
 
-- if the edge is unidirectional, then messages will follow that direction
-- if the edge is undirected or bidirectional, then messages will follow both directions
-
-The *message passing step* is performed several times ($K$). The final graph will have the same structure of the initial one, but each embedding will be different and more *context-aware*. So **graph-in, graph-out** architecture is used for each step.
+The *message passing step* is performed several times ($K$). The final graph will have the same structure of the initial one, but each embedding will be different and more *context-aware*. Each convolutional step follows a **graph-in, graph-out** architecture: <u>a graph is passed as input and the computation outputs a graph with the same structure and updated embeddings</u>.
 
 ### Simple GNN
 
 ![image.png](assets/image%2011.png)
+The idea is to learn new embeddings for each component of the graph, without changing the structure of the graph itself.
 
-The idea is to learn new embeddings for each component of the graph, without using and/or updating the connectivity of the graph.
-
-Each component of the graph is updated independently w.r.t. the others. Components are then updated simultaneously, in each **GNN layer**.
+The so called **GNN Layer** uses a dedicated MLP for the three types of components:
+* $f_{U_{n}}$ is the **global** (universal) update function
+* $f_{V_{n}}$ is the **node** (vertex) update function
+* $f_{E_{n}}$ is the **edge** update function
 
 At this point, some predictions can already be done on actual embeddings, by feeding them to a NN (or any differentiable model).
 
-However, this is not always so straightforward: we may want to make predictions on nodes, but no node data is available; we may want to make predictions on edges, but no edge data is available; and so on.
+#### Pooling Information
+However, this is not always so straightforward: we may want to make predictions on nodes when no node data is available; we may want to make predictions on edges, but no edge data is available; and so on.
 
-The solution is using **pooling** techniques once that all embeddings have been learned: gather embeddings for each component to be pooled and then produce a new embedding using an aggregation function.
-The pooling operation is represented with $\rho$.
+The solution is using **pooling** techniques once that all embeddings have been learned: <u>gather embeddings for each component to be pooled and then produce a new embedding using an aggregation function (such as sum or mean functions).</u>
+The **pooling operation** is represented with $\rho$ and can be used to pool data between components.
+
+**Example**
+$\huge\rho \small _{E_{n} \rightarrow V_{n}}$ represents a polling pass that updates nodes’ embeddings using edges’.
 
 **Pooling w/o message passing**
+* Pooling edges embeddings to nodes (e.g. when node data is missing)
+  ![image.png|600](assets/image%2012.png)
+  
+* Pooling nodes embeddings to edges (e.g. when edge data is missing)
+  
+  ![image.png|600](assets/image%2013.png)
+  
+* Pooling nodes embeddings to global (e.g. when global info is needed)
+  
+  ![image.png|600](assets/image%2014.png)
+**Pooling w/ message passing**
+It is possible to <u>make more sophisticated predictions by using pooling within the GNN layer, in order to make our learned embeddings aware of graph connectivity.</u>
 
-- Pooling edges embeddings to nodes (when node data is missing)
-    
-    ![image.png](assets/image%2012.png)
-    
-- Pooling nodes embeddings to edges (when edge data is missing)
-    
-    ![image.png](assets/image%2013.png)
-    
-- Pooling nodes embeddings to global
-    
-    ![image.png](assets/image%2014.png)
-    
-
-It is possible to make more sophisticated predictions by using pooling within the GNN layer, in order to make our learned embeddings aware of graph connectivity.
-Pooling can now be though as a type of convolution, where an element gathers data about its neighbors.
+This is done by using **message passing** algorithms, where <u>neighbouring nodes or edges exchange information and influence each other’s updated embeddings.</u>
+The general idea of the algorithm can be explained as follows:
+1. \[For each node] gather all the neighboring node embeddings (messages)
+2. Aggregate all messages using an aggregate function (sum, mean, etc.)
+3. All poled messages are passed through an update function
 By stacking $K$ GNN layers, at step $k$, a node will have information about all the nodes far $k$ steps from itself.
+
+> [!tip]
+> Pooling can now be though as a type of **convolution**, where an element gathers data about its neighbors.
+
 
 ![Screenshot 2024-08-20 alle 07.39.44.png](assets/Screenshot_2024-08-20_alle_07.39.44.png)
 
 Again, available data may not be complete, so we may want to incorporate information from edges/global.
 
-**Pooling w/ message passing**
+- Pooling nodes embeddings with neighboring ones
+  ![[Pasted image 20250520170059.png|600]]
+- Pooling neighboring edges embeddings to nodes
+  ![image.png|600](assets/image%2015.png)
+  ![image.png|600](assets/image%2016.png)
+  > [!warning]
+> Node and edge information are not necessarily the same size/shape.
+> When they differ, one way is to learn a linear mapping from the space of edges to the nodes one.
+> Another way is to concatenate the embeddings.
 
-- Pooling neighboring edges embeddings to nodes (when node data is missing)
-    
-    ![image.png](assets/image%2015.png)
-    
-    ![image.png](assets/image%2016.png)
-    
-- Pooling nodes embeddings to global
-This can be quite challenging: one solution is to implement one (or more) **master node** that connects all the nodes, to allow information exchange between very distant nodes.
-    
-    ![image.png](assets/image%2017.png)
-    
+- Global representation
+  Using all the previous approaches, two nods very far from each other will never be able to exchange information.
+  <u>The idea is to enable alle the nodes to communicate with each other</u>.
+  
+  One solution is to implement one (or more) **master node** that connects all the nodes, to allow information exchange between very distant nodes.
+  ![image.png|600](assets/image%2017.png)
 
-Of course, even domain specific aggregation operations can also be designed, taking into account edge types, degree of connectivity, etc.
+Of course, even **domain specific aggregation operations** can also be designed, taking into account edge types, degree of connectivity, etc.
 
 Now, several GNN variants will be discussed. Different variants are distinguished by the way these representations are computed.
+### Applications
+* **Node classification**
+  Classifying individual nodes
+* **Graph classification**
+  Classifying entire graphs
+* **Node clustering**
+  Grouping together similar nodes based on connectivity
+* **Link prediction**
+  Predicting missing links between two nodes
+* **Influence Maximization**
+  Identifying influential nodes
+### Legacy GNN
+#### Graph Laplacian
+Some preliminary definitions should be made.
 
-### Graph Convolutional Networks (GCN)
-https://distill.pub/2021/understanding-gnns/
+Given the graph $G$, an arbitrary ordering of the $n$ nodes is done.
+Its adjacency matrix $A$ is denoted, with the **diagonal matrix** $D$ of $G$ where:
+$$
+D_{v}=\sum_{u}A_{vu}
+$$
+The **degree** of a node $v$ is the <u>number of edges incident at $v$ itself.</u>
+
+Finally, the graph Laplacian $L$ is:
+$$
+L=D-A
+$$
+![[Pasted image 20250520181943.png|500]]
+The graph Laplacian shows up in different mathematical problems on graphs.
+
+Now, polynomials of the following form can be built:
+$$
+p_{w}(L)=w_{0}I_{n}+w_{i}L+w_{2}L^2+\dots+w_{d}L^d=\sum_{i=0}^d w_{i}L^i
+$$
+$p_w(L)$ can be represented using a shorter annotation: $w=[w_0,\dots,w_d]$.
+
+These polynomials can be thought of as the equivalent of filters in CNNs, and the coefficients $w$ as the weights of the filters.
+![[Pasted image 20250520192924.png|400]]
+Lets’s suppose nodes have one-dimensional features, so $x_v \in \mathbb R \text{ for } v \in V$.
+Alle the nodes’ features can be stacked to get a vector $x \in \mathbb R^n$.
+
+Now a **convolution** of $x$ can be defined:
+$$
+x'=p_{w}(L)x
+$$
+**Example**
+$w_0=1$
+Others $w=0$
+$$
+x'=p_{w}(L)x=\sum_{i=0}^d w_{i} L^i x = w_{0}I_{n}x = x
+$$
+**Example**
+$w_1=1$
+Others $w=0$
+$$
+\begin{align}
+x_{v}' &= 1 \cdot L_{v}x \\
+&= \sum_{u \in G} L_{vu} x_{u} \\
+&= \sum_{u \in G} (D_{vu}-A_{vu}) x_{u} \\
+&= D_{v}x_{v}-\sum_{u \in \mathcal N(v)} x_{u}
+\end{align}
+$$
+Basically, features at each node $v$ are combined with the feature of its immediate neighbors $u \in N(v)$.
+
+It’s easy to say that the degree $d$ of the polynomial is a measure that tells how far I am going from a specific node to gather information.
+$$
+\text{dist}_{G}(v,u)>i \Rightarrow L^i_{vu}=0
+$$
+This means that, given a polynomial $p_w(L)$ of degree $d$ to convolve $x$ with, $x_v$ (the value for the $v$-th node) is:
+$$
+\begin{align}
+x_{v}' &= (p_{w}(L)x)_{v} \\ \\
+&= (p_{w}(L))_{v}x \\
+&= \sum_{i=0}^d w_{i}L_{v}^i x \\
+&= \sum_{i=0}^d w_{i} \sum_{u \in G}L_{vu}^i x \\
+&= \sum_{i=0}^d w_{i} \sum_{ \\
+\substack{u \in G \\ \text{dist}_{G}(v,u) \le i}
+}L_{vu}^i x
+\end{align}
+$$
+As shown in the formulas, combining nodes means just summing them up, trivially.
+The sum operation allows the nodes ordering independency, required by GNN tasks.
+This is valid for any polynomial degree.
+
+**Examples**
 ==#TODO==
-### Graph Attention Networks (GAT)
+* Unnormalized L
+* Normalized L (definition of $\tilde{L}$ in [[#ChebNet]])
+> [!info]
+> An interactive example can be found here:
+> https://distill.pub/2021/understanding-gnns/#polynomial-convolutions
+#### ChebNet
+It refines the idea of polynomial filters by looking at the ones of the form:
+$$
+p_{w}(L) = \sum_{i=1}^d w_{i}T_{i}(\tilde{L})
+$$
+where:
+* $T_i$ is the $i$-degree **Chebyshev polynomial of the first kind**
+* $\tilde{L}$ is the **normalized laplacian**, using the largest eigenvalue of $L$:
+  $$
+  \tilde{L} = \frac{2L}{\lambda_{max}L}-I_{n}
+  $$
+==#TODO: ChebNet motivation==
+#### Embedding Computation
+When using the graph laplacian approach, any polynomial filter can be stacked onto each other, much like a standard CNN.
+
+Let’s suppose we have K different polynomial filters, where the $k$-th polynomial has its own learnable weights $w^k$:
 ==#TODO==
-### Graph Sample and Aggregate (GraphSAGE)
+### Modern GNN
+The main difference w.r.t. the legacy GNNs is that the modern implementations use Deep Learning approaches.
+#### Graph Convolutional Networks (GCN)
 ==#TODO==
-### Graph Isomorphism Network (GIN)
+#### Graph Attention Networks (GAT)
 ==#TODO==
-# 14. Transformers
+#### Graph Sample and Aggregate (GraphSAGE)
+==#TODO==
+#### Graph Isomorphism Network (GIN)
+==#TODO==
+# 13. Transformers
 > [!📚] 
 > [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 > https://jalammar.github.io/illustrated-transformer/
@@ -2141,7 +2259,7 @@ Some task could be carried out:
 ## Beyond Language Modeling
 Transformers can be used even for task not related to language:
 ==#TODO==
-# 15. Diffusion Models
+# 14. Diffusion Models
 > [!📚] 
 > https://jalammar.github.io/illustrated-stable-diffusion/
 > https://stable-diffusion-art.com/how-stable-diffusion-work/
