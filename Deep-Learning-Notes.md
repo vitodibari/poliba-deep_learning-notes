@@ -1029,7 +1029,7 @@ Some limitation for Adam are:
 > [!info]
 > https://medium.com/data-science/why-adamw-matters-736223f31b5d
 
-![[1*BOPnuP6VP0JVnJsoCdTo-g.webp | 400]]
+![[1BOPnuP6VP0JVnJsoCdTo-g.webp| 400]]
 *violet: Adam with L2 regularization, the adam variant present in most framework implementations
 green: AdamW*
 
@@ -2033,9 +2033,47 @@ where:
 When using the graph laplacian approach, any polynomial filter can be stacked onto each other, much like a standard CNN.
 
 Let’s suppose we have K different polynomial filters, where the $k$-th polynomial has its own learnable weights $w^k$:
-==#TODO==
+1. $h^{(0)}=x$
+   compute original features
+2. for $k=1,2,\dots,K$
+   iterate through all the convolutional steps
+	1. $p^{(k)}=p_{w^{(k)}}(L)$
+	   compute matrix $p^{(k)}$ as the polynomial defined by the learned $w^{(k)}$, evaluated at $L$
+	2. $g^{(k)}=p^{(k)} \times h^{(k-1)}$
+	3. $h^{(k)}=\sigma \left( g^{(k)} \right)$
+	   apply non-linearity to get $h^{(k)}$
+
+Using this approach means sharing the same filter weights across different nodes of the graph. It mimics CNNs which reuse weights for convolutional filters across the grid.
 ### Modern GNN
 The main difference w.r.t. the legacy GNNs is that the modern implementations use Deep Learning approaches.
+
+Let’s go back to the convolution of $x$ by the polynomial $L$ and we focus on the particular update of vertex $v$ (with feature $x_v$). This operation can be split into:
+1. **aggregating** over immediate (1-hop) neighbors of $x$, called $x_u$
+2. **combining** the neighbors’ features $x_{uv}$ with $x_v$
+These two are the main operations used in the message passing scheme, performed iteratively $K$ times (or over $K$ layers).
+
+These steps can be further formalized:
+1. **Node aggregation**
+   <u>For each node, the aggregation function combines the representations of neighboring nodes</u> $j$ and the current node $i$.
+   $$
+   m_{i}^{(l)}=\sum_{j=N(i)}f^{(l)} \left(
+   h_{i}^{(l-1)},h_{j}^{(l-1)},e_{ij}
+   \right)
+   $$
+   where:
+   * $h_{i}^{(l-1)}$ is the representation of current node $i$ at previous convolutional layer
+   * $h_{j}^{(l-1)}$ is the representation of neighboring node $j$ at previous convolutional layer
+   * $e_{ij}$ is the edge between nodes $i$ and $j$
+   * $f^{(l)}$ is a learnable function
+2. **Node update**
+   The result at layer $l$, $m_i^{(l)}$, is used to <u>update the representation of node</u> $i$.
+   $$
+   h_{i}^{(l)}=g^{(l)}(h_{i}^{(l-1)},m_{i}^{(l)})
+   $$
+      where:
+   * $g^{(l)}$ is a learnable function
+3. \[Optional\] **Graph-level readout**
+   When need, a **readout function** <u>aggregates all the node representations to calculate a graph-level representation</u>.
 #### Graph Convolutional Networks (GCN)
 ==#TODO==
 #### Graph Attention Networks (GAT)
