@@ -2070,18 +2070,127 @@ These steps can be further formalized:
    $$
    h_{i}^{(l)}=g^{(l)}(h_{i}^{(l-1)},m_{i}^{(l)})
    $$
-      where:
-   * $g^{(l)}$ is a learnable function
+    where:
+    * $g^{(l)}$ is a learnable function
 3. \[Optional\] **Graph-level readout**
    When need, a **readout function** <u>aggregates all the node representations to calculate a graph-level representation</u>.
+
+Up to this point, both aggregation and combination functions are generic. Different kind of functions can be used for both purposes and this is what characterizes all following GCN implementations.
+
+---
+Before going on, that’s the legend to interpret the formulas colors:
+* $\color{Orange}\text{Orange}$: embedding of current node _$v$
+* $\color{Purple}\text{Purple}$: embedding of a neighbor of node $v$
+* $\color{Cyan}\text{Cyan}$: (potentially) learnable parameters
 #### Graph Convolutional Networks (GCN)
-==#TODO==
+1. $h^{(0)}_{v}=x_{v} \quad \forall v \in V$
+2. for $k=1,2,\dots,K$
+   convolutions are computed
+   $$
+   {\color{Orange}h_{v}^{(k)}}={\color{Cyan}f^{(k)}}\left(
+   {\color{Cyan}W^{(k)}} \cdot \frac{\sum_{u \in \mathcal N(v)}{\color{Purple}h_{u}^{(k-1)}}}{|\mathcal N(v)|}+{\color{Cyan}B^{(k)}} \cdot {\color{Orange}h_{v}^{(k-1)}}
+   \right)
+   \quad \forall v \in V
+   $$
+3. output graph is used to make predictions
+   $$
+   \hat{y_{v}}=\text{PREDICT}\left( {\color{Orange}h_{v}^{(K)}} \right)
+   $$
+	where:
+	* $\text{PREDICT}$ is a NN learned together with the GCN model
+	* $f^{(k)}, W^{(k)}, B^{(k)}$ are shared across all the nodes for each convolutional layer $k$ (model scales well)
+
+Actually, the original paper proposed a slightly different version:   
+$$
+{\color{Orange}h_{v}^{(k)}}={\color{Cyan}f^{(k)}}\left(
+{\color{Cyan}W^{(k)}} \cdot \frac{\sum_{u \in \mathcal N(v)}{\color{Purple}h_{u}^{(k-1)}}}{|\mathcal N(v)||\mathcal N(v)|}+{\color{Cyan}B^{(k)}} \cdot {\color{Orange}h_{v}^{(k-1)}}
+\right)
+\quad \forall v \in V
+$$
 #### Graph Attention Networks (GAT)
-==#TODO==
+1. $h^{(0)}_{v}=x_{v} \quad \forall v \in V$
+2. for $k=1,2,\dots,K$
+   convolutions are computed
+   $$
+   {\color{Orange}h_{v}^{(k)}}=
+   {\color{Cyan}f^{(k)}}\left(
+   {\color{Cyan}W^{(k)}} \cdot
+   \left[
+   \sum_{u \in \mathcal N(v)}
+   \alpha_{vu}^{(k-1)}
+   {\color{Purple}h_{u}^{(k-1)}}
+   +\alpha_{vv}^{(k-1)}{\color{Orange}h_{v}^{(k-1)}}
+   \right]
+   \right)
+   \quad \forall v \in V
+   $$
+   where:
+   $$
+   \alpha_{vu}^{(k)}=
+   \frac{{\color{Cyan}A^{(k)}}({\color{Orange}h_{v}^{(k)}},{\color{Purple}h_{u}^{(k)}})}
+   {\sum_{w \in \mathcal N(v)}{\color{Cyan}A^{(k)}}({\color{Orange}h_{v}^{(k)}},{\color{Purple}h_{w}^{(k)}})}
+   \quad \forall (v,u) \in E
+   $$
+3. output graph is used to make predictions
+   $$
+   \hat{y_{v}}=\text{PREDICT}\left( {\color{Orange}h_{v}^{(K)}} \right)
+   $$
+	where:
+	* $\text{PREDICT}$ is a NN learned together with the GAT model
+	* $f^{(k)}, W^{(k)}, A^{(k)}$ are shared across all the nodes for each convolutional layer $k$ (model scales well)
+
+> [!warning]
+> The formula above is valid only for the single-headed GAT.
+> Multi-headed variant is similar, but more complex of course.
 #### Graph Sample and Aggregate (GraphSAGE)
-==#TODO==
+1. $h^{(0)}_{v}=x_{v} \quad \forall v \in V$
+2. for $k=1,2,\dots,K$
+   convolutions are computed
+   $$
+   {\color{Orange}h_{v}^{(k)}}=
+   {\color{Cyan}f^{(k)}}\left(
+   {\color{Cyan}W^{(k)}} \cdot
+   \left[
+   \underset{u \in \mathcal N(v)}{\color{Cyan}\text{AGG}}
+   (\{{\color{Purple}h_{u}^{(k-1)}}\}),
+   {\color{Orange}h_{v}^{(k-1)}}
+   \right]
+   \right)
+   \quad \forall v \in V
+   $$
+   where the original paper considers the following choices for $\text{AGG}$:
+
+3. output graph is used to make predictions
+   $$
+   \hat{y_{v}}=\text{PREDICT}\left( {\color{Orange}h_{v}^{(K)}} \right)
+   $$
+	where:
+	* $\text{PREDICT}$ is a NN learned together with the GraphSAGE model
+	* $f^{(k)}, W^{(k)}, \text{AGG}$ are shared across all the nodes for each convolutional layer $k$ (model scales well)
 #### Graph Isomorphism Network (GIN)
-==#TODO==
+1. $h^{(0)}_{v}=x_{v} \quad \forall v \in V$
+2. for $k=1,2,\dots,K$
+   convolutions are computed
+   $$
+   {\color{Orange}h_{v}^{(k)}}=
+   {\color{Cyan}f^{(k)}}\left(
+   \sum_{u \in \mathcal N(v)}
+   {\color{Purple}h_{u}^{(k-1)}}
+   +(1+ {\color{Cyan}\epsilon^{(k)}})
+   \cdot
+   {\color{Orange}h_{v}^{(k-1)}}
+   \right)
+   \quad \forall v \in V
+   $$
+3. output graph is used to make predictions
+   $$
+   \hat{y_{v}}=\text{PREDICT}\left( {\color{Orange}h_{v}^{(K)}} \right)
+   $$
+	where:
+	* $\text{PREDICT}$ is a NN learned together with the GIN model
+	* $\epsilon^{(k)} \in \mathbb R$
+	* $f^{(k)}, \epsilon^{(k)}$ are shared across all the nodes for each convolutional layer $k$ (model scales well)
+
 # 13. Transformers
 > [!📚] 
 > [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
