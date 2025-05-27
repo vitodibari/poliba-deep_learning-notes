@@ -452,14 +452,15 @@ The optional parameter *weight* is a vector of values used to assign a weight to
 
 MAE can be intended as **unreduced** (a vector is returned):
 $$
-l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
+l(x,y)=L=\{l_{1},\dots,l_{N}\}^T
 \quad \text{with} \quad
 l_{n}=-w_{y_n}x_{n,y_{n}}, \quad
 w_{c}=\mathrm{weight}[c] \cdot 1 \{c \ne \text{ignore\_index} \}
 $$
 where:
-* $x_{n,y_{n}}$ is the predicted log probability of the true class $y_n$, for the $n$-th sample
+* $x_{n,y_{n}}$ is the predicted log probability of the true class for the $n$-th label $y_n$, for the $n$-th sample
 * \[optional] $\mathrm{weight}$ is a 1D Tensor assigning weight to each of the classes ($\mathrm{weight}[c]$ is the weight assigned to the $c$-th class). This is particularly useful when you have an unbalanced training set.
+  $w_{y_n}$ is the weight associated to the true class for the $n$-th label $y_n$
 MAE can be also intended as **reduced** (a scalar is returned):
 $$
 l(x,y)=
@@ -513,18 +514,18 @@ where:
 #MEM
 BCE Loss can be adopted for binary classification problems only.
 $$
-l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
+l(x,y)=L=\{l_{1},\dots,l_{N}\}^T
 \quad \text{with} \quad
-l_{n}=-w_{n}[y_{n}\log x_{n}+(1-y_{n})\log(1-x_{n})]
+l_{n}=-w_{y_{n}}[y_{n}\log x_{n}+(1-y_{n})\log(1-x_{n})]
 $$
 Where $x_{n}$ and $y_{n}$ are assumed as probabilities, so they are strictly between 0 and 1.
 And $x$ and $y$ are probability distributions.
 ### Binary Cross Entropy Loss with Logits
 This loss combines a Sigmoid layer and the BCELoss in one single class. 
 $$
-l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
+l(x,y)=L=\{l_{1},\dots,l_{N}\}^T
 \quad \text{with} \quad
-l_{n}=-w_{n}[y_{n}\log \sigma(x_{n})+(1-y_{n})\log(1-\sigma(x_{n}))]
+l_{n}=-w_{y_{n}}[y_{n}\log \sigma(x_{n})+(1-y_{n})\log(1-\sigma(x_{n}))]
 $$
 > [!NOTE] ⚠️
 > This version is more numerically stable than just using a plain Sigmoid followed by a BCELoss.
@@ -538,7 +539,7 @@ The Kullback-Leibler Divergency measures the similarity between a probability di
 It is **non-symmetric**, so if the arguments (the two distributions) are swapped, the result changes.
 #MEM
 $$
-l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
+l(x,y)=L=\{l_{1},\dots,l_{N}\}^T
 \quad \text{with} \quad
 l_{n}=y_{n}\left( \log \frac{y_{n}}{x_{n}} \right)
 $$
@@ -565,7 +566,7 @@ A CNN can be trained to infer if two face images belong to the same person or no
 *Example of triplet ranking loss*
 ### Hinge Embedding Loss
 $$
-l(x,y)=L=\{l_{1,\dots,l_{N}}\}^T
+l(x,y)=L=\{l_{1},\dots,l_{N}\}^T
 \quad \text{with} \quad
 l_{n}=
 \begin{cases}
@@ -581,13 +582,49 @@ where:
 * $\delta$ is the margin
 It can be also intended as reduced (a scalar is returned) using `mean` or `sum`.
 ### Margin Ranking Loss
-==#TODO==
+It is a pairwise ranking loss.
+$$
+L(x,y)=\max(-y \cdot (x_{1}-x_{2})+\delta,0)
+$$
+where:
+* $x_{1}$ is the input for the first category
+* $x_{2}$ is the input for the second category
+* $y$ is the label tensor that contains 1 or -1 values
+	* 1: two input samples are similar
+	* -1: two input samples are not similar
+* $\delta$ is the margin
 ### Triplet Margin Loss
-==#TODO==
+It is a triplet ranking loss.
+$$
+L(a,p,n)=\max \{ d(a_{i},p_{i}) - d(a_{i},n_{i}) + \delta, 0\}
+$$
+where:
+* $a_i$ is the sample from the anchor category
+* $p_i$ is the sample from the positive category (the same as the anchor one)
+* $n_i$ is the sample from the negative category (different from the anchor one)
+* $\delta$ is the margin
+
+![[llustration-of-the-triplet-loss-constraint-showing-three-embedding-samples-anchor-blue.jpg|400]]
+<u>The idea is to push the first distance (with the positive sample) toward 0 and the second one (with the negative sample) to be larger than some margin w.r.t. the first one.</u>
+
+> [!tip]
+> Originally used to train the Google image search engine.
 ### Soft Margin Loss
-==#TODO==
+It is a pairwise ranking loss.
+$$
+L(x,y)=\sum_{i} \frac{\log (1+\exp{(-y[i] \cdot x[i]))}}{\text{size}(x)}
+$$
+where:
+* $x$ is the input, containing distances between pairs of elements, with $x[i] \in [-1,1]$
+* $y$ contains the labels, so every element is $-1$ or $1$
 ### Multi-Class Hinge Loss
 ==#TODO==
+$$
+L(x,y)=\sum_{ij} \frac{\max (0,1-(x[y[i]]-x[i]))}{\text{size}(x)}
+$$
+where:
+* $x$ and $y$ must have the same size
+* 
 ## Cosine Embedding Loss
 ![[Pasted image 20250511193407.png|500]]
 This type of loss is typically used when **embeddings** are involved: vectorial representations of input data (text, audio, images, etc).
@@ -787,17 +824,16 @@ where $\beta$ was a tradeoff factor too.
 ### Stochastic Heavy Ball Method
 #MEM 
 $$
-w_{k+1}=w_k-\gamma\nabla L(X,y,w_k)+\beta(w_k-w_{k-1}) 
-\qquad
-0\le\beta<1
+w_{k+1}=w_k-\gamma\nabla L(X,y,w_k)+\beta(w_k-w_{k-1})
 $$
-$\beta$ tells how much of the previous direction to keep.
+where:
+* $0\le\beta<1$ tells how much of the previous direction to keep.
 It has been omitted because of its limited contribute to the final outcome.
 
 > [!tip]
 > - use momentum with Stochastic Gradient Descent only
 > - keep $0.9\le\beta\le0.99$
-> - decrease $\eta$ when increasing $\beta$ to keep convergence and the same order of magnitude
+> - decrease $\gamma$ when increasing $\beta$ to keep convergence and the same order of magnitude
 > - at the beginning of learning, keep momentum small (~0.5) because of very large gradients then, raise it to the final value (~0.9-0.99)
 
 Momentum allows training at speeds that would cause divergent oscillations in the vanilla GD case.
@@ -844,17 +880,16 @@ $$
 $$
 where:
 * $\epsilon$ is the learning rate
-
-The local gain value $g_{ij}$ is determined using the following algorithm:
-1. start with local gains $g_{ij}=1 \quad \forall i,j$
-2. perform the update: 
-   if gradient for weight $w_{ij}$ DOES NOT changes sign (direction)
-   $$
-   \dfrac{\partial E}{\partial w_{ij}}(t)
-   \dfrac{\partial E}{\partial w_{ij}}(t-1)> 0
-   $$
-	* then: $g_{ij}(t)=g_{ij}(t-1)+0.05$
-	* else: $g_{ij}(t)=g_{ij}(t-1)*0.95$
+* $g_{ij}$ is **local gain** value, determined using the following algorithm:
+	1. start with local gains $g_{ij}=1 \quad \forall i,j$
+	2. perform the update: 
+	   if gradient for weight $w_{ij}$ DOES NOT changes sign (direction)
+	   $$
+	   \dfrac{\partial E}{\partial w_{ij}}(t)
+	   \dfrac{\partial E}{\partial w_{ij}}(t-1)> 0
+	   $$
+		* then: $g_{ij}(t)=g_{ij}(t-1)+0.05$
+		* else: $g_{ij}(t)=g_{ij}(t-1)*0.95$
 
 Some tips:
 - limit the gains in a reasonable range such as $[0.1, 10]$ or $[.01, 100]$
@@ -942,7 +977,7 @@ $$
 \theta_{t+1,i}=\theta_{t,i}-\frac{\eta}{\sqrt{ G_{t,ii} + \epsilon }} \cdot g_{t,i}
 $$
 where:
-* $G_t \in R^{d \times d}$ is a diagonal matrix where the element $(i,i)$ is the sum of the squares of the gradients w.r.t. $\theta_{i}$ up to time step $t$
+* $G_t \in R^{d \times d}$ is a diagonal matrix where the element $(i,i)$ is the sum of the squares of the gradients for the weight $\theta_{i}$, up to time step $t$
 * $\epsilon$ is a smoothing term to avoid division by 0
 
 Adagrad is used in order to try to extract those (rare) features that are really informative among all of them.
@@ -958,7 +993,7 @@ Moreover, instead of storing the $w$ previous squares, they are added to an accu
 $$
 E[g^2]_{t}=\gamma E[g^2]_{t-1}+(1-\gamma)g_{t}^2
 $$
-New update again the update step *should be*:
+The new update step *should be*:
 $$
 \begin{align}
 \theta_{t+1,i}
@@ -978,6 +1013,7 @@ E[\Delta\theta^2]_{t} &= \gamma E[\Delta\theta^2]_{t-1}+(1-\gamma)\Delta\theta^2
 $$
 ==#TODO: sistemare pedici==
 #### rmsprop analogies
+==#TODO==
 ### Adam
 `Adam` stands for **adaptive moment estimation**.
 
@@ -986,7 +1022,7 @@ In addition to storing an exponentially decaying average of past squared gradien
 $$
 \begin{align}
 m_{t} &= \beta_{1}m_{t-1}+(1-\beta_{1})g_{t} \\ \\
-v_{t} &= \beta_{2}v_{t-1}+(1-\beta_{1})g_{t}^2 \\
+v_{t} &= \beta_{2}v_{t-1}+(1-\beta_{2})g_{t}^2 \\
 \end{align}
 $$
 where:
