@@ -4,9 +4,10 @@
 <aside>
 <font color="#00b050">⚠️ Green sections are deep divings</font>
 </aside>
-# Repositories
-https://distill.pub/
-# Milestones
+
+==#TODO== means that the concept is incomplete
+#MEM means that the concept must be memorized for the oral exam
+# 1. Milestones
 1997 - Deep Blue (IBM)
 2011 - Watson (IBM)
 2016 - AlphaGo (Google DeepMind)
@@ -20,7 +21,7 @@ https://distill.pub/
 2022 - ChatGPT (OpenAI)
 2023 - Bard (Google)
 2023 - Gemini (Google)
-# 1. Introduction
+# 2. Introduction
 ![Untitled | 500](assets/Untitled.png)
 In general, it is not that easy stating whether a model is doing a ML or DL task. The main difference between ML and DL is that DL models do not require human intervention to extract features: this is done automatically. This is defined **Representation Learning**, where models creates features by themselves, starting from simpler and abstracting them to more complex ones.
 
@@ -92,7 +93,7 @@ Mini-batched are often used to enable parallelization.
 > - use regulation (L1 or L2 or a combination)
 > - use [[#Dropout]] layers
 > - use cross-entropy loss for classification tasks
-# 1. Basic Architectures
+# 3. Basic Architectures
 ==#TODO ==
 ## Multiplicative Modules
 ==#TODO ==
@@ -102,7 +103,7 @@ Mini-batched are often used to enable parallelization.
 ==#TODO ==
 ### Shared Weights
 ==#TODO ==
-# 2. Learning Representations
+# 4. Learning Representations
 
 > ![[Example-of-application-of-the-Covers-theorem-Linear-inseparable-data-become-separable.ppm.png|400]]
 > The probability that a dichotomy over P points in N dimensions is linearly separable goes to zero as P gets larger than N.
@@ -158,7 +159,7 @@ Some examples can be:
 ## Why does deep architecture work?
 <u>They trade space for time</u>: better in case of machines with limited memory, like computers.
 In brief, more layers → more computation, less hardware.
-# 3. Activation Functions
+# 5. Activation Functions
 Activation functions are fundamental in deep neural networks: they are the <u>founding block that allows the non-linear behavior of the models</u>.
 
 There exists a variety of activation functions, that can be grouped in:
@@ -382,7 +383,7 @@ $$
 \mathrm{LogSoftmax}(x_{i})=\log \left( \frac{e^{x_{i}}}{\sum_{j}e^{x_{j}}} \right)
 $$
 It is not generally used as activation function, but as a component in other loss functions.
-# 4. Loss Functions
+# 6. Loss Functions
 Here are listed some of the most used losses in Deep Learning.
 Specific loss functions are used for specific tasks, such as regression and classification ones.
 ## Regression losses
@@ -653,7 +654,7 @@ where output is:
 * $0 < \mathrm{similarity} < 1$
 * $1$: when $x_1$ and $x_2$ have the same direction (never happens in practice)
 * $0$: when $x_1$ and $x_2$ have opposite directions (never happens in practice)
-# 5. Optimization
+# 7. Optimization
 
 > [!NOTE] 📚
 > https://medium.datadriveninvestor.com/overview-of-different-optimizers-for-neural-networks-e0ed119440c3
@@ -1116,7 +1117,7 @@ Lion was discovered by picking AdamW as the first member of the population.
 ==#TODO==
 ### Conjugate gradient
 ==#TODO==
-# 6. Normalization Layers
+# 8. Normalization Layers
 > [!NOTE] 📚
 > https://youtu.be/tNIpEZLv_eg
 > https://youtu.be/yXOMHOpbon8
@@ -1140,6 +1141,8 @@ The (correct) idea is to put normalization layers between all the hidden layers 
 Each component is normalized individually, following the formula below. Of course, normalization is made over mini-batches, so this is an approximation of the “mathematically correct” way.
 However, unlike _inputs_, we might not want to force the activations to have mean 0 and variance 1; this is why new learnable parameters $\gamma$ and $\beta$ are introduced.
 Those extra parameters are dedicated to each weight and (of course) shared among each mini-batch.
+
+#MEM
 ![[Pasted image 20250406170754.png|400]]
 
 Usually, BN layers are placed between linear layer and activation function.
@@ -1170,8 +1173,8 @@ It <u>normalizes activations in a network across the mini-batch, for each featur
 It is the first and most well-known version.
 $$
 \begin{align}
-\mu_{i} &= \frac{1}{n} \sum_{j=1}^n x_{ij} \\
-\sigma^2_{i} &= \frac{1}{n} \sum_{j=1}^n (x_{ij}-\mu_{i})^2 \\
+\mu_{i} &= \frac{1}{n} \sum_{i=1}^n x_{ij} \\
+\sigma^2_{i} &= \frac{1}{n} \sum_{i=1}^n (x_{ij}-\mu_{i})^2 \\
 \hat{x_{ij}} &= \frac{x_{ij}-\mu_{i}}{\sqrt{ \sigma^2_{i} + \epsilon }}
 \end{align}
 $$
@@ -1208,7 +1211,7 @@ This operation is image-specific as well.
 * use pytorch implementations: `torch.nnBatchNorm2d`, `torch.nn.GroupNorm`
 * GroupNorm is recommended over BatchNorm: it’s more stable, theoretically simpler
 * ==#TODO: last slide==
-# 7. Convolutional Neural Networks
+# 9. Convolutional Neural Networks
 Regular NNs don’t scale well when using images.
 
 **Example: FC NN with CIFAR-10**
@@ -1312,7 +1315,10 @@ In this kind of pooling, the output is the average calculated on values picked u
 ## CIFAR-10 Arch
 #MEM 
 \[(CONV - RELU)\*N - POOL?]\*M - (FC - RELU)\*K - SOFTMAX
-# 8. Recurrent Neural Networks
+# 10. Recurrent Neural Networks
+> [!info]
+> https://youtu.be/8HyCNIVRbSU
+
 ## Sequence Modeling Problem
 It is the kind of problem where we want to learn from a sequence of input data.
 
@@ -1420,6 +1426,11 @@ Of course, as for every deep architecture, BPTT run on long sequences suffers fr
 The solution is using **gated cells**: more complex recurrent units that use gates to control what information will be passed through.
 The next two models use different gated cells at their core.
 ## Long Short Term Memory (LSTM)
+> [!note]
+> https://youtu.be/8HyCNIVRbSU?t=280
+> https://dennybritz.com/posts/wildml/recurrent-neural-networks-tutorial-part-4/
+> https://colah.github.io/posts/2015-08-Understanding-LSTMs/
+
 ![[Pasted image 20250408204820.png|200]]
 #MEM 
 ![[Pasted image 20250408185518.png|400]]
@@ -1457,7 +1468,7 @@ This action is controlled by:
 * the sigmoid decides which values will be passed forward (what information the hidden state will carry) by transforming $\tanh(c_{t})$ to be between:
 	* 0 → not important
 	* 1 → important
-<u>The output of a cella is the hidden state</u> $h_{t}$.
+<u>The output of a cell is the hidden state</u> $h_{t}$.
 
 > [!NOTE] 💡
 > Cell state $c_t$ is also called **long-term memory**.
@@ -1467,6 +1478,9 @@ This action is controlled by:
 It is defined **uninterrupted gradient flow** because <u>backpropagation from $c_t$ to $c_{t-1}$ does not require matrix multiplication</u>: there are no weights along that path.
 ==#TODO: da capire==
 ## Gated Recurrent Unit (GRU)
+> [!info]
+> https://youtu.be/8HyCNIVRbSU?t=583
+
 ![[Pasted image 20250408204850.png|200]]
 #MEM 
 ![[Pasted image 20250408205314.png|400]]
@@ -1509,7 +1523,7 @@ Of course, this works iff the sequence is already known.
   In this case, the vanilla RNN approach causes a bottleneck when passing through the state that encodes the phrase to be translated.
   A solution could be adopting an **attention mechanism**.
   ![[Pasted image 20250408213830.png|400]]
-# 9. Improve Generalization
+# 11. Improve Generalization
 > [!NOTE] 📚
 > * https://youtu.be/MbpaeKYMXVk
 > * https://youtu.be/Ukb5yqeF1po
@@ -1595,7 +1609,7 @@ Of course, it’s very different from averaging all the dropped out models, but 
 > [!💡] 
 > *If your deep neural net is not overfitting you should be using a bigger one!*
 
-# 10. Autoencoders
+# 12. Autoencoders
 > [!📚] 
 > https://www.youtube.com/watch?v=-TPFg-RG-KY&pp=ygUXdmFyaWF0aW9uYWwgYXV0b2VuY29kZXI%3D
 
@@ -1725,7 +1739,7 @@ However, given that the integral at the denominator is intractable, an approxima
 ==#TODO==
 ### Backpropagation
 ==#TODO==
-# 11. Generative Adversarial Networks
+# 13. Generative Adversarial Networks
 > [!📚]
 > https://www.youtube.com/watch?v=Sw9r8CL98N0&pp=ygUfZ2VuZXJhdGl2ZSBhZHZlcnNhcmlhbCBuZXR3b3Jrcw%3D%3D
 
@@ -1806,7 +1820,7 @@ $$
 -E_{x \sim Data} \log D(x) - E_{z \sim Noise} \log(1-D(G(z)))
 \}
 $$
-# 12. Graph Machine Learning
+# 14. Graph Machine Learning
 > [!📚]
 > https://youtu.be/zCEYiCxrL_0
 > https://gnn.seas.upenn.edu/
@@ -2227,7 +2241,7 @@ $$
 	* $\epsilon^{(k)} \in \mathbb R$
 	* $f^{(k)}, \epsilon^{(k)}$ are shared across all the nodes for each convolutional layer $k$ (model scales well)
 
-# 13. Transformers
+# 15. Transformers
 > [!📚] 
 > [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 > https://jalammar.github.io/illustrated-transformer/
@@ -2442,7 +2456,7 @@ Some task could be carried out:
 ## Beyond Language Modeling
 Transformers can be used even for task not related to language:
 ==#TODO==
-# 14. Diffusion Models
+# 16. Diffusion Models
 > [!📚] 
 > https://jalammar.github.io/illustrated-stable-diffusion/
 > https://stable-diffusion-art.com/how-stable-diffusion-work/
