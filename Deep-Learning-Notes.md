@@ -1431,6 +1431,7 @@ The next two models use different gated cells at their core.
 > https://dennybritz.com/posts/wildml/recurrent-neural-networks-tutorial-part-4/
 > https://colah.github.io/posts/2015-08-Understanding-LSTMs/
 
+==#TODO: aggiustare simbolo concatenazione nelle figure==
 ![[Pasted image 20250408204820.png|200]]
 #MEM 
 ![[Pasted image 20250408185518.png|400]]
@@ -1452,8 +1453,8 @@ This result will be used in the [[#Update]] step.
 Means “forget irrelevant parts of the previous state”.
 ![[Pasted image 20250408192024.png|400]]
 This action is controlled by the input gate’s sigmoid and tanh:
-* the tanh squishes $(x_{t}+h_{t-1})$ between -1 and 1, to help regulate the network
-* the sigmoid decides which values will be updated by transforming $\tanh(x_{t}+h_{t-1})$ to be between:
+* the tanh squishes $(x_{t} \mathbin\Vert h_{t-1})$ between -1 and 1, to help regulate the network
+* the sigmoid decides which values will be updated by transforming $\tanh(x_{t} \mathbin\Vert h_{t-1})$ to be between:
 	* 0 → not important, so the tanh result will be discarded
 	* 1 → important, so the tanh result will be kept
 #### Update
@@ -1474,9 +1475,14 @@ This action is controlled by:
 > Cell state $c_t$ is also called **long-term memory**.
 > Hidden state $h_t$ is also called **short-term memory**.
 ### Gradient Flow
+> [!info]
+> https://www.baeldung.com/cs/lstm-vanishing-gradient-prevention
+
 ![[Pasted image 20250408201241.png]]
+LSTMs were designed to focus on overcoming the vanishing gradient problem.
+
 It is defined **uninterrupted gradient flow** because <u>backpropagation from $c_t$ to $c_{t-1}$ does not require matrix multiplication</u>: there are no weights along that path.
-==#TODO: da capire==
+
 ## Gated Recurrent Unit (GRU)
 > [!info]
 > https://youtu.be/8HyCNIVRbSU?t=583
@@ -1489,21 +1495,29 @@ Simplifications are:
 * <u>single hidden state</u>, but modified such that it can to the same things that long and short term would do
 * keep (f) and write (i) gates are merged → **update gate** (z)
 * no dedicated output gate (o)
+* $\hat y_t = h_{t}$
 New gate is introduced: **reset gate** (r) to break information flow from previous hidden state(s).
 
 GRUs are simpler → less tensor operations.
 <u>However, there is no clear winner: usually both are tested to determine which is better.</u>
 ### Operations
-#### Update
+#### Reset
 ![[Pasted image 20250408212523.png|400]]
 Update gate acts similarly to the forget + input fate of LSTMs.
-==#TODO: descrivere comportamento gate e tanh==
-#### Reset
-![[Pasted image 20250408212632.png|400]]
-The action is controlled by a sigmoid that decides what information $h_t$
+The action is controlled by a sigmoid ($r_t$) that decides what information $h_t$
 * 0 → to throw away
 * 1 → to keep
-The sigmoid output is given by $h_{t-1}+x_{t}$.
+The sigmoid output is given by $(x_{t} \mathbin\Vert h_{t-1})$.
+The result will be used to calculate the candidate value that will update the hidden state.
+#### Update
+Controls what information is sent to the next time step.
+![[Pasted image 20250408212632.png|400]]
+This action is controlled by:
+* tanh: squashes values $(x_{t} \mathbin\Vert h_{t-1})$ between -1 and 1, to help regulate the network
+* the sigmoid decides which values will be passed forward (what information the hidden state will carry) by transforming $\tanh(c_{t})$ to be between:
+	* 0 → not important
+	* 1 → important
+<u>The output of a cell is the hidden state</u> $h_{t}$.
 ## Bi-LSTM
 ![[Pasted image 20250408213937.png|500]]
 *Bi-LSTM implementation. Bi-GRU is an option as well.*
@@ -1512,7 +1526,7 @@ The idea is to create a sequence model that <u>takes into account the reversed s
 Of course, this works iff the sequence is already known.
 ### Bi-LSTM with Attention
 ![[Pasted image 20250409124354.png|500]]
-==#TODO: scrivere altro?==
+<font color="#6425d0">A **Bi-LSTM with Attention** processes sequence data both forward and backward, and uses attention to focus on the most relevant parts of the sequence for better understanding and prediction.</font>
 ## Applications
 * Music generation: a sheet music is given as input and its next character is predicted
   ![[Pasted image 20250408213344.png|300]]
