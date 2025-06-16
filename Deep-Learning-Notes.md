@@ -2150,6 +2150,7 @@ Before going on, that’s the legend to interpret the formulas colors:
 1. $h^{(0)}_{v}=x_{v} \quad \forall v \in V$
 2. for $k=1,2,\dots,K$
    convolutions are computed
+   #MEM 
    $$
    {\color{Orange}h_{v}^{(k)}}={\color{Cyan}f^{(k)}}\left(
    {\color{Cyan}W^{(k)}} \cdot \frac{\sum_{u \in \mathcal N(v)}{\color{Purple}h_{u}^{(k-1)}}}{|\mathcal N(v)|}+{\color{Cyan}B^{(k)}} \cdot {\color{Orange}h_{v}^{(k-1)}}
@@ -2164,7 +2165,8 @@ Before going on, that’s the legend to interpret the formulas colors:
 	* $\text{PREDICT}$ is a NN learned together with the GCN model
 	* $f^{(k)}, W^{(k)}, B^{(k)}$ are shared across all the nodes for each convolutional layer $k$ (model scales well)
 
-Actually, the original paper proposed a slightly different version:   
+Actually, the original paper proposed a slightly different version:
+#MEM 
 $$
 {\color{Orange}h_{v}^{(k)}}={\color{Cyan}f^{(k)}}\left(
 {\color{Cyan}W^{(k)}} \cdot \frac{\sum_{u \in \mathcal N(v)}{\color{Purple}h_{u}^{(k-1)}}}{|\mathcal N(v)||\mathcal N(v)|}+{\color{Cyan}B^{(k)}} \cdot {\color{Orange}h_{v}^{(k-1)}}
@@ -2175,6 +2177,7 @@ $$
 1. $h^{(0)}_{v}=x_{v} \quad \forall v \in V$
 2. for $k=1,2,\dots,K$
    convolutions are computed
+   #MEM 
    $$
    {\color{Orange}h_{v}^{(k)}}=
    {\color{Cyan}f^{(k)}}\left(
@@ -2210,6 +2213,7 @@ $$
 1. $h^{(0)}_{v}=x_{v} \quad \forall v \in V$
 2. for $k=1,2,\dots,K$
    convolutions are computed
+   #MEM 
    $$
    {\color{Orange}h_{v}^{(k)}}=
    {\color{Cyan}f^{(k)}}\left(
@@ -2235,6 +2239,7 @@ $$
 1. $h^{(0)}_{v}=x_{v} \quad \forall v \in V$
 2. for $k=1,2,\dots,K$
    convolutions are computed
+   #MEM 
    $$
    {\color{Orange}h_{v}^{(k)}}=
    {\color{Cyan}f^{(k)}}\left(
@@ -2246,7 +2251,7 @@ $$
    \right)
    \quad \forall v \in V
    $$
-3. output graph is used to make predictions
+4. output graph is used to make predictions
    $$
    \hat{y_{v}}=\text{PREDICT}\left( {\color{Orange}h_{v}^{(K)}} \right)
    $$
@@ -2462,14 +2467,72 @@ Some task could be carried out:
 * Sentiment analysis task
 * Fact-checking task
 ## Generative Pre-trained Transformer (GPT-2)
-==#TODO==
-### Self-Attention
-==#TODO==
-#### Masking
-==#TODO==
+GPTs are widely used to generate text. This is the most advanced technology used for text generation, after the use of naive bags of words and LSTMs.
+Most recent GPTs use billions of parameters to process text. In order to fulfill the huge latent space, a huge number of training samples is required as well.
+
+Compared to BERT:
+* GPTs architecture is made up of decoders only (BERT is made up of encoders)
+* GPTs can output one token at a time (BERT can output a bunch of tokens at once)
+* **auto-regression**: <u>in GPTs each output token will be (the last) part of the input for the next one</u> (while loosing this feature, BERT gains the ability to incorporate the context on both sides of a single word → better results)
+
+Of course, also GPT-2 uses an attention mechanism, very similar to the [[#Self-Attention]] one seen in the encoders, but with an important difference.
+### Masked Self-Attention
+![[Pasted image 20250615194901.png|400]]
+The idea is to compute the attention just on previous tokens w.r.t. the current one. This approach is required in auto-regressive models.
+![[Pasted image 20250615195218.png|400]]
+Masked self-attention is used by the grounding blocks of GPT-2, called **Transformer-Decoder** (because they are decoder-based indeed).
+
+![[Pasted image 20250616124252.png|600]]
+It is implemented by using a matrix called **attention mask**: it just sets to $-\infty$ the attention scores of the i-th token an the following ones, leaving untouched the scores w.r.t. to the previous tokens.
+The $-\infty$ value will turn to $0$ when softmax is used.
+
+As seen in the images, the first token for a decoder block is always `<s>`.
+> [!tip]
+> Actually, the first token is `<|endoftext|>`, but we say `<s>` for brevity.
+
+In the real implementation, **multi-head masked self-attention** is used.
+![[Pasted image 20250616125102.png|500]]
+Let’s suppose we have $N$ attention heads: the Q, K, V vectors will be split into $N$ parts and they will go through N parallels attention processes, without interfering with each other.
+In the end, the N embeddings will be concatenated into the final result (**merging attention heads**).
+
+Before passing the concatenated output to the feed forward sublayer, the **projection** step is performed: the vector is just multiplied by a learned squared matrix, so it is projected into the output vector. This last one vector will be passed to the next sublayer.
+### Model output
+Let’s see how output is computed then.
+![[Pasted image 20250616111131.png|400]]
+1. the token is converted to a tensor (embedding)
+2. the embedding gets positionally encoded (see [[#Positional Encoding]])
+3. the embedding goes through the decoder blocks to be processed, and for each one:
+	1. Multi-headed [[#Masked Self-Attention]] is performed
+	2. the output embedding goes through a feed forward layer. Here two matrix multiplication are performed:
+		1. the embedding is multiplied by a matrix and the result is 4 times longer (so the matrix size is 768x768\*4)
+		2. the result is multiplied by another matrix and the final vector goes back to a 768 length
+4. the final embedding gets multiplied by the **token embeddings matrix**, made up of the embeddings for each token of the vocabulary
+5. a probability score for each token (**logit**) is returned: the higher the score, the more appropriate is the token to be returned as output
+6. the list of scores is sorted from the greater to the lower
+7. the final output token will be chosen from the `top_k` ones on the top of the list. Usually `top_k=40`.
+   (if `top_k=1` then select the token with highest score)
+
+> [!warning]
+> Keep in mind that when computing the i-th token, GPT-2 **does not re-interpret the previous ones**, so the $Q$, $K$, $V$ vectors are reused.
+> They must not be recomputed, because it would go against the masked self-attention mechanism and the auto-regressive approach.
+
+> [!tip]
+> Transformers use [[#Layer norm]].
+### Weights used
+Just to recap all the weight matrices the input vector encounters:
+![[Pasted image 20250616164931.png|500]]
 ## Beyond Language Modeling
 Transformers can be used even for task not related to language:
-==#TODO==
+* **machine translation**: 
+  ![[Pasted image 20250616170208.png|400]]
+	* training: dataset made up of sentence to translate + special token (used to specify input and output lang) + the translated sentence
+	* inference: sentence to translate + special token
+* **summarization**:
+  ![[Pasted image 20250616170303.png|400]]
+	* training: dataset made up of text to summarize + special token + the summarized sentence
+	* inference: sentence to summarize + special token
+* **music generation**: a MIDI file can be converted into a sequence of one-hot vectors, ready to be the input for a transformer
+  ![[Pasted image 20250616170634.png|500]]
 # 16. Diffusion Models
 > [!📚] 
 > https://jalammar.github.io/illustrated-stable-diffusion/
