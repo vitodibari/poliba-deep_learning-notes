@@ -460,8 +460,9 @@ w_{c}=\mathrm{weight}[c] \cdot 1 \{c \ne \text{ignore\_index} \}
 $$
 where:
 * $x_{n,y_{n}}$ is the predicted log probability of the true class for the $n$-th label $y_n$, for the $n$-th sample
-* \[optional] $\mathrm{weight}$ is a 1D Tensor assigning weight to each of the classes ($\mathrm{weight}[c]$ is the weight assigned to the $c$-th class). This is particularly useful when you have an unbalanced training set.
-  $w_{y_n}$ is the weight associated to the true class for the $n$-th label $y_n$
+* \[optional] $\mathrm{weight}$ is a <u>1D Tensor assigning weight to each of the classes</u> ($\mathrm{weight}[c]$ is the weight assigned to the $c$-th class). This is particularly useful when you have an unbalanced training set.
+  $w_{y_n}$ is the weight associated with the class for which the $n$-th label $y_n$ belongs.
+  (see [[#Weights & Imbalanced Classes]])
 MAE can be also intended as **reduced** (a scalar is returned):
 $$
 l(x,y)=
@@ -479,7 +480,7 @@ The **weight vector** $\mathrm{weight}$ is useful when data classes have differe
 frequency of the common flu is much higher than the lung cancer).
 Naively, we could simply increase the weight for categories that has small number of samples.
 
-However, it’s better to **equalize the frequency** in training so that we can exploit stochastic gradients better. 
+However, it’s better to **equalize the frequency** in training so that we can exploit stochastic gradients better.
 Basically, we put samples of each class in a different buffer. Then generate each minibatch by picking the same number samples from each one. When the smaller buffer runs out of
 samples to use, <u>we iterate through the smaller buffer from the beginning again until every sample of the larger class is used.</u>
 <u>This way gives us equal frequency for all categories by going through those circular buffers.</u>
@@ -603,7 +604,7 @@ where:
 * $a_i$ is the sample from the anchor category
 * $p_i$ is the sample from the positive category (the same as the anchor one)
 * $n_i$ is the sample from the negative category (different from the anchor one)
-* $\delta$ is the margin
+* $\delta$ is the margin ($\alpha$ in the image below)
 
 ![[llustration-of-the-triplet-loss-constraint-showing-three-embedding-samples-anchor-blue.jpg|400]]
 <u>The idea is to push the first distance (with the positive sample) toward 0 and the second one (with the negative sample) to be larger than some margin w.r.t. the first one.</u>
@@ -634,7 +635,7 @@ $$
 l_{x,y}=
 \begin{cases}
 1- \cos(x_{1},x_{2}) & \text{if } y=1\\
-\max(0,\cos(x_{1},x_{2})) - \delta) & \text{if } y=-1
+\max(0,\cos(x_{1},x_{2}) - \delta) & \text{if } y=-1
 \end{cases}
 $$
 where:
@@ -701,15 +702,11 @@ Learning rate value is calculated using a function (linear or exponential) of th
 
 ![image.png](assets/image.png)
 ### Decrease on plateaus
-
 The idea is to keep using a relatively big (especially in the beginning) learning rate to quickly approach a local minima and reduce it once we hit a plateau.
 
 ![image.pngQ|400](assets/image%201.png)
-
 ### Cyclic learning rates
-
 ![image.png](assets/image%202.png)
-
 ## Initialize weights
 > [!NOTE] 📚
 > https://machinelearningmastery.com/weight-initialization-for-deep-learning-neural-networks/
@@ -755,9 +752,11 @@ $$
 ### Kaiming Initialization (He Initialization)
 It is an initialization technique similar to Xavier one, but <u>suitable for ReLU activations</u>.
 Here, random values are taken from the following normal distribution:
-
-$\mathcal N(0,\sigma^2)$ where $\sigma=gain \cdot \sqrt{\dfrac{2}{n^l}}$
-
+$$
+\mathcal N(0,\sigma^2)
+\quad \text{where} \quad
+\sigma=gain \cdot \sqrt{\dfrac{2}{n^l}}
+$$
 In both Xavier and Kaiming initializations, $gain$ is an hyperparameter. Its value is 1 by default, but some researches have demonstrated that performances may be improved be properly changing the value from layer to layer.
 ## \[#Recap] Shift and Scale inputs
 Recap [here](https://www.notion.so/Machine-Learning-Notes-fd12021b7a554122bce07e4233196a54?pvs=21).
@@ -773,6 +772,7 @@ Recap [here](https://www.notion.so/Machine-Learning-Notes-fd12021b7a554122bce07e
 ## Momentum
 > [!info]
 > https://distill.pub/2017/momentum/
+> https://proceedings.mlr.press/v28/sutskever13.html
 
 ![image.png](assets/image%203.png)
 
@@ -800,8 +800,8 @@ Momentum updates equations in GD:
 #MEM 
 $$
 \begin{aligned}
-p_{k+1} &= \beta p_k + \eta\nabla L(X,y,w_k) \\
-w_{k+1} &= w_k + \gamma p_{k+1}
+p_{k+1} &= \beta p_k + \gamma\nabla L(X,y,w_k) \\
+w_{k+1} &= w_k + p_{k+1}
 \end{aligned}
 $$
 where:
@@ -811,14 +811,13 @@ where:
     - small values → quick changes of direction
     - large values → takes longer to change direction
 - $\eta$ is the learning rate
-- $\gamma$ is the learning rate
 ![[Pasted image 20250402194208.png|400]]
 *Effect of $\beta$ on the loss curve*
 ### Old Momentum Formula
 $$
 \begin{align}
-p_{k+1} &= \beta p_k + (1-\beta)\eta\nabla L(X,y,w_k) \\
-w_{k+1} &= w_k + \gamma p_{k+1}
+p_{k+1} &= \beta p_k + (1-\beta)\gamma\nabla L(X,y,w_k) \\
+w_{k+1} &= w_k + p_{k+1}
 \end{align}
 $$
 where $\beta$ was a tradeoff factor too.
@@ -837,7 +836,7 @@ It has been omitted because of its limited contribute to the final outcome.
 > - decrease $\gamma$ when increasing $\beta$ to keep convergence and the same order of magnitude
 > - at the beginning of learning, keep momentum small (~0.5) because of very large gradients then, raise it to the final value (~0.9-0.99)
 
-Momentum allows training at speeds that would cause divergent oscillations in the vanilla GD case.
+<u>Momentum allows training at speeds that would cause divergent oscillations in the vanilla GD case.</u>
 ### Nesterov Accelerated Gradient
 > [!NOTE] 📚
 > https://youtu.be/sV9aiEsXanE
@@ -847,6 +846,12 @@ The previous momentum method consisted in:
 1. compute gradient at current location
 2. take a big jump in the direction of the updated accumulated gradient
 
+![[ENsXuDM__iMkL_6N.png|400]]
+<font color="#245bdb">standard momentum</font>
+<font color="#938953">jump</font>
+<font color="#ff0000">correction</font>
+<font color="#00b050">accumulated gradient</font>
+
 <u>Nesterov Accelerated Gradient is a new version that often works better</u>:
 1. make a big jump in the direction of the previously accumulated gradient in order to *take just a look* and measure the gradient where you end up
 2. compute weights update based on the history and the lookup (previous point)
@@ -854,10 +859,13 @@ The previous momentum method consisted in:
 $$
 \begin{align}
 \hat w_k &= w_k-\beta p_k \\
-p_{k+1} &= \beta p_k+\eta\nabla L(X,y,\hat w_k) \\
-w_{k+1} &= w_k-\gamma p_{k+1}
+p_{k+1} &= \beta p_k+\gamma\nabla L(X,y,\hat w_k) \\
+w_{k+1} &= w_k- p_{k+1}
 \end{align}
 $$
+> [!note]
+> Notice that $L(X,y,\hat w_k)$ depends on $\hat w_k$ indeed, so ==#TODO==
+
 ![[Pasted image 20250403223255.png|400]]
 ![[1_Q1plMUkXfLPTRCCTRg36g.gif|400]]
 *Red: vanilla momentum. Blue: NAG.*
@@ -999,7 +1007,7 @@ $$
 \begin{align}
 \theta_{t+1,i}
 &=\theta_{t,i}-\frac{\eta}{\sqrt{ E[g^2]_{t} + \epsilon }} \cdot g_{t,i} \\
-&=\theta_{t,i}-\frac{\eta}{ RMS[g_{t}] } \cdot g_{t,i}
+&=\theta_{t,i}-\frac{\eta}{ RMS[g]_{t} } \cdot g_{t,i}
 \end{align}
 $$
 However, <u>the authors noted that the units in this update do not match</u>: the update should have the same hypothetical units as the parameter.
@@ -1008,10 +1016,13 @@ The accumulator is redefined, using the squared variation of the parameter (not 
 #MEM
 $$
 \begin{align}
-E[\Delta\theta^2]_{t} &= \gamma E[\Delta\theta^2]_{t-1}+(1-\gamma)\Delta\theta^2 \\
-\theta_{t+1,i} &= \theta_{t,i}-\frac{RMS[\Delta\theta]_{t-1}}{ RMS[g_{t}] } \cdot g_{t,i}
+E[\Delta\theta^2]_{t} &= \gamma E[\Delta\theta^2]_{t-1}+(1-\gamma)\Delta\theta_{t}^2 \\
+\theta_{t+1,i} &= \theta_{t,i}-\frac{RMS[\Delta\theta]_{t-1}}{ RMS[g]_{t} } \cdot g_{t,i}
 \end{align}
 $$
+> [!note]
+> The numerator considers the $RMS[\Delta \theta]$ for the previous update $(t-1)$, because the current $\Delta \theta_t$ is still not known.
+
 ==#TODO: sistemare pedici==
 #### rmsprop analogies
 ==#TODO==
