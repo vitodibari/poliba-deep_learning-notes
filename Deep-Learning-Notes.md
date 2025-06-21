@@ -104,6 +104,8 @@ Mini-batched are often used to enable parallelization.
 ### Shared Weights
 ==#TODO ==
 # 4. Learning Representations
+> [!info]
+> https://en.wikipedia.org/wiki/Cover%27s_theorem
 
 > ![[Example-of-application-of-the-Covers-theorem-Linear-inseparable-data-become-separable.ppm.png|400]]
 > The probability that a dichotomy over P points in N dimensions is linearly separable goes to zero as P gets larger than N.
@@ -117,11 +119,14 @@ To fix the problem, more dimensions should be considered (increase N w.r.t. P).
 * $P=3$: i can still separate all points in two classes with a single line
 * $P \ge 4$: i could not be possible (e.g. the point to separate is in the middle)
 
-This brief discussion wants to enhance the linear classifiers limitations. This is why non-linear models are usually involved to achieve complex classification tasks; <u>non-linearity allows escaping from the Cover’s Theorem Problem.</u>
+This brief discussion wants to enhance the linear classifiers limitations. 
+<u>A consequence of the theorem is that given a set of training data that is not linearly separable, one can with high probability transform it into a training set that is linearly separable by projecting it into a higher-dimensional space via some non-linear transformation.</u>
+This is why non-linear models are usually involved to achieve complex classification tasks.
+<u>Non-linearity allows escaping from the Cover’s Theorem Problem.</u>
 ## Deep Architectures
 The idea is to train complex models to extract relevant features from the raw inputs (like images).
 
-Using complex models (very high dimensionality) means following this basic principle: expanding the number of dimensions of the representations makes data more likely to be linearly separable.
+Using complex models (very high dimensionality) means following this basic principle: <u>expanding the number of dimensions of the representations makes data more likely to be linearly separable.</u>
 Some implementations are:
 * space tiling
 * random projections
@@ -739,6 +744,9 @@ $$
 \quad \text{where} \quad
 a=gain \cdot \sqrt{\dfrac{6}{n_{in}+n_{out}}}
 $$
+where
+* $n_{in}$ is the fan-in
+* $n_{out}$ is the fan-out
 #### Normal Xavier Initialization
 #MEM 
 Where random values are taken from the following normal distribution:
@@ -755,7 +763,7 @@ Here, random values are taken from the following normal distribution:
 $$
 \mathcal N(0,\sigma^2)
 \quad \text{where} \quad
-\sigma=gain \cdot \sqrt{\dfrac{2}{n^l}}
+\sigma=gain \cdot \sqrt{\dfrac{2}{n_{in}}}
 $$
 In both Xavier and Kaiming initializations, $gain$ is an hyperparameter. Its value is 1 by default, but some researches have demonstrated that performances may be improved be properly changing the value from layer to layer.
 ## \[#Recap] Shift and Scale inputs
@@ -2726,9 +2734,12 @@ This is an improvement w.r.t. the previous approach: here a guidance is implemen
 The idea is to train a conditional diffusion model, so a diffusion model where the conditioning part is within the UNet.
 As in previous approach, guidance strength is parameterized by **classifier guidance scale** (**CFG** value).
 ### Stable Diffusion v1 vs v2
-
 |                | Stable Diffusion v1 | Stable Diffusion v2                |
 | -------------- | ------------------- | ---------------------------------- |
 | Text embedding | CLIP                | OpenCLIP (larger and open dataset) |
 | Training       | 200-250k steps      | 550k steps                         |
+# Energy Based Models
+> [!info]
+> https://youtu.be/m61KiAMCJ5Q
 
+==#TODO==
