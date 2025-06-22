@@ -662,7 +662,7 @@ where output is:
 * $0$: when $x_1$ and $x_2$ have opposite directions (never happens in practice)
 # 7. Optimization
 
-> [!NOTE] 📚
+> [!info]
 > https://medium.datadriveninvestor.com/overview-of-different-optimizers-for-neural-networks-e0ed119440c3
 > https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
 
@@ -680,7 +680,7 @@ In general, dataset used to perform deep learning tasks are huge and redundant. 
 
 The opposite approach is called **online**: weights are updated (backpropagation) after each time a data point is fed to the model. Of course, this is a very slow process and almost never used, in favor of previous one.
 ## Learning Rate Scheduling
-> [!NOTE] 📚
+> [!info]
 > https://towardsdatascience.com/the-subtle-art-of-fixing-and-modifying-learning-rate-f1e22b537303
 
 It’s said to be the most important hyperparameter in a DL model. Its value must not be:
@@ -690,12 +690,13 @@ It’s said to be the most important hyperparameter in a DL model. Its value mus
 When starting with a too high learning rate, weights of neural network will become very big (positively or negatively) soon → error derivatives will be tiny and less informative → model won’t learn anymore. Often people mistake it for a local minimum, but that’s actually a **plateau**.
 
 ### Saddle points vs Local Minima
-> [!NOTE] 📚
+> [!info]
 > https://theorangeduck.com/page/local-minima-saddle-points-plateaus
 
 Especially for high-dimensional deep learning models, the real enemy is not local minima, but saddle points and plateaus.
 
-> [!NOTE] 📚 From https://arxiv.org/abs/1406.2572
+> [!info] 
+> From https://arxiv.org/abs/1406.2572
 > \[…] critical points with error ε much larger than that of the global minimum, are exponentially likely to be saddle points, with the fraction of negative curvature directions being an increasing function of the error. Conversely, all local minima, which necessarily have index 0, are likely to have an error very close to that of the global minimum. Intuitively, *in high dimensions, the chance that all the directions around a critical point lead upward (positive curvature) is exponentially small* w.r.t. the number of dimensions, unless the critical point is the global minimum or stands at an error level close to it, i.e., it is unlikely one can find a way to go further down.    
 
 A trade-off value must be found. However there are some techniques that allow learning rate value to change, from epoch to epoch. Some here below.
@@ -713,7 +714,7 @@ The idea is to keep using a relatively big (especially in the beginning) learnin
 ### Cyclic learning rates
 ![image.png](assets/image%202.png)
 ## Initialize weights
-> [!NOTE] 📚
+> [!info]
 > https://machinelearningmastery.com/weight-initialization-for-deep-learning-neural-networks/
 
 #Recall [weight random initialization](https://www.notion.so/Machine-Learning-Notes-fd12021b7a554122bce07e4233196a54?pvs=21).
@@ -846,7 +847,7 @@ It has been omitted because of its limited contribute to the final outcome.
 
 <u>Momentum allows training at speeds that would cause divergent oscillations in the vanilla GD case.</u>
 ### Nesterov Accelerated Gradient
-> [!NOTE] 📚
+> [!info]
 > https://youtu.be/sV9aiEsXanE
 
 #Recall
@@ -917,7 +918,7 @@ Some tips:
 > [!tip]
 > This approach is very similar to the TCP Congestion Control one.
 ## Implementation
-> [!NOTE] 📚
+> [!info]
 > https://youtu.be/AM9c7zN2KwU (author of Toronto University slides)
 ### rprop
 > [!info]
@@ -1056,9 +1057,6 @@ where:
 
 #MEM 
 $$
-\beta_{1}=0.9, \quad m_{t-1}=0, \quad m_{t}=0.1 \cdot g_{t}
-$$
-$$
 \hat{m_{t}}=\frac{m_{t}}{1-\beta_{1}^t}, \quad 
 \hat{v_{t}}=\frac{v_{t}}{1-\beta_{2}^t}
 $$
@@ -1092,6 +1090,10 @@ green: AdamW*
 `AdamW` (W stands for weight decay) is an improved version of Adam: weight decay is performed only after controlling the parameter-wise step size.
 
 The problem with Adam + L2 can be represented by exploding line 12 of the algorithm (without the green part):
+
+> [!note]
+> In the following formulas, there is a missing part at the denominator $(1-\beta^t_1)$: since $t$ is assumed to be large, the whole component goes to 1, so it's negligible.
+
 \[Adam + L2]
 $$
 \theta_{t,i} \leftarrow \theta_{t-1,i}-\alpha\frac{\beta_{1}m_{t-1}+(1-\beta_{1})(\nabla f_{t,i}
@@ -1137,10 +1139,14 @@ Lion was discovered by picking AdamW as the first member of the population.
 ### Conjugate gradient
 ==#TODO==
 # 8. Normalization Layers
-> [!NOTE] 📚
+> [!info]
 > https://youtu.be/tNIpEZLv_eg
 > https://youtu.be/yXOMHOpbon8
+> https://youtu.be/p8keh8fsYT0
 > https://ahmedbadary.github.io/work_files/research/dl/concepts/norm_methods
+> https://medium.com/nerd-for-tech/overview-of-normalization-techniques-in-deep-learning-e12a79060daf
+
+==#TODO: rendere un po’ più chiaro il processo==
 
 Even it is counter-intuitive, normalization layers perform a **standardization** task: the idea is to <u>change the distribution of the values to a target one with desired mean and standard deviation</u>; instead, normalization means force values to a new range.
 
@@ -1175,7 +1181,7 @@ Usually, BN layers are placed between linear layer and activation function.
   \frac{\partial BN((aW)u)}{\partial u} = \frac{\partial BN(Wu)}{\partial u}
   $$
 * <u>Reduces demand for regularization</u>
-* <u>Allows larger learning rates → faster training</u> (even if more computation is required for the single-iteration)
+* <u>Allows larger learning rates → faster training</u> (even if more computation is required for the single-iteration) because loss function is less elliptical and more regular
 * <u>Allows training with saturating activations</u>: it keeps activations in desired ranges
 * Mean and standard deviation <u>estimations are noisy due to the randomness of the data → better generalization</u>
 ## Normalization Operations
@@ -1211,10 +1217,12 @@ $$
 \hat{x_{ij}} &= \frac{x_{ij}-\mu_{j}}{\sqrt{ \sigma^2_{j} + \epsilon }}
 \end{align}
 $$
+Used as normalization technique in RNNs (see [[#10. Recurrent Neural Networks]]) where input and output does not have fixed length, so there is no information about the size of the batch.
 ### Instance norm
 ![[Pasted image 20250512154844.png|200]]
+It is another attempt to reduce dependency on the batch used.
 <u>Similar to the LN, but it’s applied over each image’s channel.</u>
-This operation is specific to images, used in neural style transfer tasks to make the network agnostic to the contrast of the original images.
+This operation was used in neural style transfer tasks to make the network agnostic to the contrast of the original images.
 ### Group norm
 ![[Pasted image 20250512155948.png|200]]
 This operation is image-specific as well.
@@ -1337,7 +1345,6 @@ In this kind of pooling, the output is the average calculated on values picked u
 # 10. Recurrent Neural Networks
 > [!info]
 > https://youtu.be/8HyCNIVRbSU
-
 ## Sequence Modeling Problem
 It is the kind of problem where we want to learn from a sequence of input data.
 
@@ -1557,7 +1564,7 @@ Of course, this works iff the sequence is already known.
   A solution could be adopting an **attention mechanism**.
   ![[Pasted image 20250408213830.png|400]]
 # 11. Improve Generalization
-> [!NOTE] 📚
+> [!info]
 > * https://youtu.be/MbpaeKYMXVk
 > * https://youtu.be/Ukb5yqeF1po
 > * https://youtu.be/pu2d_AFuwdQ
@@ -1643,7 +1650,7 @@ Of course, it’s very different from averaging all the dropped out models, but 
 > *If your deep neural net is not overfitting you should be using a bigger one!*
 
 # 12. Autoencoders
-> [!📚] 
+> [!info] 
 > https://www.youtube.com/watch?v=-TPFg-RG-KY&pp=ygUXdmFyaWF0aW9uYWwgYXV0b2VuY29kZXI%3D
 
 The idea is building an <u>unsupervised NN able to learn the identity function</u>, so trained to output the input itself.
@@ -1672,7 +1679,7 @@ In this case, the autoencoder is split:
 	$$
 
 ## Sparse Autoencoders
-> [!📚] 
+> [!info] 
 > https://web.stanford.edu/class/cs294a/sparseAutoencoder.pdf
 > https://medium.com/@syoya/what-happens-in-sparse-autencoder-b9a5a69da5c6
 
@@ -1706,7 +1713,7 @@ Skip connections allow:
 * **feature localization**: informations about pixels location in the real images are kept alive during the whole computation
 ## Variational Autoencoders
 
-> [!📚]
+> [!info]
 > https://medium.com/@rushikesh.shende/autoencoders-variational-autoencoders-vae-and-β-vae-ceba9998773d
 
 The problem that **Variational Autoencoders** (**VAE**) want to solve is that, given a specific latent space, not its points produces a meaningful decoded output.
@@ -1727,19 +1734,19 @@ The training process becomes:
 5. backpropagate
 ### VAE Loss
 ![[1kXiln_TbF15oVg7AjcUEkQ.webp]]
-The objective is always to minimize the loss, so the system must minimize:
-* the **reconstruction term** → optimizes the encoding-decoding performance
-* the **regularization term** → the latent space is shaped on a standard normal distribution. It is the KL divergence between the encoder’s distribution and $\mathcal{N}(0,1)$.
-In particular, **KL divergence** compares both the two distributions’ means vectors and covariance matrices:
-* $0$: the two distributions are equal
-* $> 0$: the two distributions are different
 #MEM 
-
 $$
 J(x^{(i)})=
 E_{z}\big[\log(p_{\theta}(x^{(i)}|z))\big]
 -D_{KL}\big(q_{\phi}(z|x^{(i)}),p_{\theta}(z)\big)
 $$
+The objective is always to minimize the loss (**Evidence Lower Bound** or **ELBO**), so the system must minimize:
+* the **reconstruction term** → optimizes the encoding-decoding performance. Usually $MSE(x,\hat x)$ is used as loss function (see [[#Mean Squared Error (L2 loss)]]).
+* the **regularization term** → the latent space is shaped on a standard normal distribution. It is the KL divergence between the encoder’s distribution and $\mathcal{N}(0,1)$.
+In particular, **KL divergence** compares both the two distributions’ means vectors and covariance matrices:
+* $0$: the two distributions are equal
+* $> 0$: the two distributions are different
+
 The expected outcome is to achieve:
 * **continuity**: close points in the latente space should yield similar contents after decoding 
 * **completeness**: points sampled from the latent space should yield meaningful results (after decoding)
@@ -1773,8 +1780,8 @@ However, given that the integral at the denominator is intractable, an approxima
 ### Backpropagation
 ==#TODO==
 # 13. Generative Adversarial Networks
-> [!📚]
-> https://www.youtube.com/watch?v=Sw9r8CL98N0&pp=ygUfZ2VuZXJhdGl2ZSBhZHZlcnNhcmlhbCBuZXR3b3Jrcw%3D%3D
+> [!info]
+> https://youtu.be/Sw9r8CL98N0
 
 GANs are typically used to generate realistic images.
 However, it is very difficult to create a generative model
@@ -1824,18 +1831,17 @@ respect to their respective goals.
 > A GAN scenario can be compared to a minimax two-player game, where the equilibrium state corresponds to the situation where the generator produces data from the exact targeted distribution and where the discriminator predicts “true” or “generated” with probability 1/2 for any point it receives.
 > So both are *perfect* adversarial players.
 
-The objective for D is to minimize the **cross-entropy loss**:
+The objective for D is to minimize the following **[[#Binary Cross Entropy Loss]]**:
 #MEM 
 $$
 \min_{D} \{-y \log D(x) - (1-y) \log (1-D(x)) \}
 $$
-The objective for G is to maximize the loss when $y=0$:
+The objective for G is to fool D, which means maximize D’s loss (seen above). When data fed to D is generated means that $y=0$, so G’s objective function is:
 #MEM 
 $$
 \begin{align}
 \max_{G} \{ -(1-y)\log(1-D(G(z))) \} &= \\
-&= \max_{G} \{ -\log(1-D(G(z))) \} \\
-&= \min_{G} \{ \log(1-D(G(z))) \}
+&= \max_{G} \{ -\log(1-D(G(z))) \}
 \end{align}
 $$
 where:
@@ -1844,9 +1850,8 @@ where:
 	* 1 is true data
 	* 0 is fake data
 * $z$ is the input for G, drawn from a source of randomness ($z \sim \mathcal N(0,1)$)
-==#TODO: capire le ultime formule da dove arrivano==
 
-In conclusion, it’s possible to say that D and G are playing a minimax game, where the objective function is:
+In conclusion, it’s possible to say that D and G are playing the following minimax game:
 #MEM 
 $$
 \min_{D}\max_{G} \{ 
@@ -1854,7 +1859,7 @@ $$
 \}
 $$
 # 14. Graph Machine Learning
-> [!📚]
+> [!info]
 > https://youtu.be/zCEYiCxrL_0
 > https://gnn.seas.upenn.edu/
 
@@ -2280,7 +2285,7 @@ $$
 	* $f^{(k)}, \epsilon^{(k)}$ are shared across all the nodes for each convolutional layer $k$ (model scales well)
 
 # 15. Transformers
-> [!📚] 
+> [!info] 
 > [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 > https://jalammar.github.io/illustrated-transformer/
 
@@ -2342,7 +2347,7 @@ where:
 In the end, i will have a score for each couple of token.
 Now, <u>for each token, the value of the other ones will be mathematically added. The addition is weighted by the score that the couple (Q,K) gets</u>: the more K is *appropriate* to Q the higher the score. This means that less relevant tokens’ value will have no (or very small) effect on the current one.
 ### Multi-headed Attention
-> [!📚] 
+> [!info] 
 > https://medium.com/@hassaanidrees7/exploring-multi-head-attention-why-more-heads-are-better-than-one-006a5823372b
 
 It’s just an iteration of the [[#Self-Attention]] mechanism.
@@ -2429,7 +2434,7 @@ During training, the model is updated such that its outputs are as close as poss
 ![[Pasted image 20250411193930.png|400]]
 ![[Pasted image 20250411194124.png|400]]
 ## Bidirectional Encoder Representations from Transformers (BERT)
-> [!📚]
+> [!info]
 > https://jalammar.github.io/illustrated-bert/
 
 BERT can be trained in both:
@@ -2553,7 +2558,7 @@ Transformers can be used even for task not related to language:
 * **music generation**: a MIDI file can be converted into a sequence of one-hot vectors, ready to be the input for a transformer
   ![[Pasted image 20250616170634.png|500]]
 # 16. Diffusion Models
-> [!📚] 
+> [!info] 
 > https://jalammar.github.io/illustrated-stable-diffusion/
 > https://stable-diffusion-art.com/how-stable-diffusion-work/
 ## Introduction
@@ -2741,5 +2746,6 @@ As in previous approach, guidance strength is parameterized by **classifier guid
 # Energy Based Models
 > [!info]
 > https://youtu.be/m61KiAMCJ5Q
+> https://youtu.be/BqgnnrojVBI
 
 ==#TODO==
