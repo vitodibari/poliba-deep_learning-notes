@@ -1240,8 +1240,7 @@ This operation is image-specific as well.
 * [[#Layer norm]], [[#Instance norm]], [[#Group norm]]: $\mu$’s and $\sigma$’s do not depend on the batches used, but on the single instance, so they are basically computed in each iteration.
 ## Practical tips
 * use pytorch implementations: `torch.nnBatchNorm2d`, `torch.nn.GroupNorm`
-* GroupNorm is recommended over BatchNorm: it’s more stable, theoretically simpler
-* ==#TODO: last slide==
+* GroupNorm is recommended over BatchNorm: it’s more stable and theoretically simpler
 # 9. Convolutional Neural Networks
 Regular NNs don’t scale well when using images.
 
@@ -1289,7 +1288,7 @@ The spatial extent of the connectivity is the hyperparameter **receptive field o
 The resulting i-th scalar is given by the dot product between the i-th row of $W_{x}$ and the input.
 ### Convolutional Layer
 ![[Pasted image 20250407180238.png|170]]
-A convolutional layer whats to extract features by preserving spatial structure of data.
+A convolutional layer extracts features by preserving spatial structure of data.
 ![[Pasted image 20250407174333.png|600]]
 The 3x5x5 filter is convolved over the input image and the scalars calculated will compose the activation map associated to the filter. The stack of activation maps is the output volume.
 
@@ -1314,16 +1313,19 @@ steps=\frac{N+2P-F}{stride}+1
 $$
 The $P$ must be set in order to get an integer number of $steps$.
 #### Receptive fields
-Given a convolutional kernel KxK, I have that each output element depends on a KxK receptive field.
+Given a convolutional kernel $K \times K$, I have that each output element taken from the $L-1$-th layer depends on a $R \times R$ receptive field.
+
+Given a $K \times K$ kernel, what happens for the next layer is the following:
 ![[Pasted image 20250407190016.png|400]]
 This consideration can be *stacked-up* if we go backwards the receptive fields.
 Each successive convolution adds $(K – 1)$ to the receptive field size. 
-With $L$ layers, the **receptive field size** is: 
+
+![[IMG_BDF578FD4C13-1.jpeg|300]]
+With $L$ layers (except the last one), the **receptive field size** of the last one w.r.t. the first is:
 #MEM 
-$$1 + L * (K – 1)$$
-![[Pasted image 20250407190312.png|300]]
-> [!NOTE] ⚠️
-> If a single component is considered, multiple receptive field can be considered, one for each layer going backward to the input.
+$$
+R=1 + L * (K – 1)
+$$
 ### Downsampling
 When images are too big, then many layers are needed to let the CNN “see” the whole image.
 Adding to much layers could make training inefficient.
