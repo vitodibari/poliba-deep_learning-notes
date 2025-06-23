@@ -1067,7 +1067,7 @@ $$
 $$
 Focus on the term $\dfrac{\hat{m_{t}}}{\sqrt{ \hat{v_{t}} + \epsilon }}$ and intuitively we can say:
 * constant (stable) gradients → $\hat{v_{t}} \rightarrow 0$ → bigger learning rate → faster learning
-* frequently changing (unstable) gradients → $\hat{v_{t}} \rightarrow 0$ → bigger learning rate → faster learning
+* frequently changing (unstable) gradients → $\hat{v_{t}} \gg 0$ → slower learning rate → slower learning
 
 Some limitation for Adam are:
 * using more parameters to tune;
@@ -1217,6 +1217,7 @@ $$
 \hat{x_{ij}} &= \frac{x_{ij}-\mu_{j}}{\sqrt{ \sigma^2_{j} + \epsilon }}
 \end{align}
 $$
+It is the first attempt to reduce the batch size constraints.
 Used as normalization technique in RNNs (see [[#10. Recurrent Neural Networks]]) where input and output does not have fixed length, so there is no information about the size of the batch.
 ### Instance norm
 ![[Pasted image 20250512154844.png|200]]
@@ -1234,6 +1235,9 @@ This operation is image-specific as well.
 > [!note]
 > A group size of 32 is recommended.
 
+## Inference phase
+* [[#Batch norm]]: while training, a running average of $\mu$’s and $\sigma$’s is kept in memory and it is used in inference phase, after training;
+* [[#Layer norm]], [[#Instance norm]], [[#Group norm]]: $\mu$’s and $\sigma$’s do not depend on the batches used, but on the single instance, so they are basically computed in each iteration.
 ## Practical tips
 * use pytorch implementations: `torch.nnBatchNorm2d`, `torch.nn.GroupNorm`
 * GroupNorm is recommended over BatchNorm: it’s more stable, theoretically simpler
