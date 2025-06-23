@@ -29,7 +29,7 @@ In general, it is not that easy stating whether a model is doing a ML or DL task
 
 ## Computational Graphs
 It is a directed graph where:
-* **nodes** are mathematical operations or variables
+* **nodes** are mathematical operations or variables;
 * **edges** represent data flow. 
 Graphs can help in understanding how to optimize the whole computation by parallelizing calculations on different hardware components.
 ### Block diagram notation
@@ -1719,8 +1719,8 @@ Skip connections are used to pass information from the encoder to the decoder pa
 What happens is that <u>the last layer layer in the convolutional block is concatenated with the first layer of the opposite deconvolutional block, for each couple of blocks found.</u>
 
 Skip connections allow:
-* **feature extraction**: features are *extracted* from the downsampled layers to the upsampled ones
-* **feature localization**: informations about pixels location in the real images are kept alive during the whole computation
+* **feature extraction**: features are *extracted* from the downsampled layers to the upsampled ones;
+* **feature localization**: informations about pixels location in the real images are kept alive during the whole computation.
 ## Variational Autoencoders
 
 > [!info]
@@ -1794,8 +1794,6 @@ However, given that the integral at the denominator is intractable, an approxima
 > https://youtu.be/Sw9r8CL98N0
 
 GANs are typically used to generate realistic images.
-However, it is very difficult to create a generative model
-
 ## Generative models
 Given a N dimensional space, is very difficult to find a distribution of data (vectors) where each sample returns an example of (e.g.) a dog. The same can be said for other targets.
 This problem can be generally and mathematically described as generating a random variable w.r.t. a specific probability distribution.
@@ -2159,6 +2157,7 @@ These steps can be further formalized:
    \right)
    $$
    where:
+   * $m_i^{(l)}$ is the candidate update value for the current node $i$
    * $h_{i}^{(l-1)}$ is the representation of current node $i$ at previous convolutional layer
    * $h_{j}^{(l-1)}$ is the representation of neighboring node $j$ at previous convolutional layer
    * $e_{ij}$ is the edge between nodes $i$ and $j$
@@ -2169,6 +2168,7 @@ These steps can be further formalized:
    h_{i}^{(l)}=g^{(l)}(h_{i}^{(l-1)},m_{i}^{(l)})
    $$
     where:
+    * $h_i^{(l)}$ is the actual update value for the current node $i$
     * $g^{(l)}$ is a learnable function
 3. \[Optional\] **Graph-level readout**
    When need, a **readout function** <u>aggregates all the node representations to calculate a graph-level representation</u>.
@@ -2299,7 +2299,7 @@ $$
 > [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 > https://jalammar.github.io/illustrated-transformer/
 
-*Transformers are a type of neural network architecture that transforms or changes an input sequence into an output sequence.*
+Transformers are a type of neural network architecture that transforms or changes an input sequence into an output sequence.
 ## Intuition
 #MEM 
 ![[attention_research_1.webp|350]]
@@ -2383,6 +2383,8 @@ Since the original embedding gets modified by the positional vector, <u>it is im
 
 <u>The shifts must be small and bounded.</u>
 This is one reason why sin and cos functions have been chosen.
+
+![[Screenshot 2025-06-23 alle 16.49.15.png]]
 Each $i$-th cell of the encoding vector is calculated as follows:
 #MEM 
 
@@ -2394,7 +2396,7 @@ PE_{(pos,2i+1)} &= \cos\left(  \frac{pos}{10000^{{2i}/{d_{model}}}}  \right)
 $$
 where:
 * $pos$: the position of the word in the input sequence
-* $i$: column index in the positional vector
+* $i$: cell index in the positional vector
 * $d_{model}$: dimensions of the output embedding space (the model one)
 
 The formula does not rely on the word itself, but just on its position. This means that positional encoding values can be calculated a priori.
@@ -2403,7 +2405,7 @@ The formula does not rely on the word itself, but just on its position. This mea
 > Naively, one could chose a growing function, that models the absolute position of the word in the input sequence, from the first to the last one.
 > However, this approach will lead to unbounded values for the positional vector, that could overcome the semantics of the embedding, when added.
 > 
-> That is why the combination of $\sin$ and $\cos$ is a good choice: given a word, they produce a positional vector that both depends on the word position and its bounded \[0,1] 
+> That is why the combination of $\sin$ and $\cos$ is a good choice: given a word, they produce a positional vector that both depends on the word position and its bounded \[0,1].
 ## Residuals
 ![[Pasted image 20250411121414.png|400]]
 **Residual connections** are used to avoid the vanishing gradients problem, by *refreshing* the signal (embedding) so the information don’t get lost during the flow.
@@ -2555,7 +2557,7 @@ Let’s see how output is computed then.
 ### Weights used
 Just to recap all the weight matrices the input vector encounters:
 ![[Pasted image 20250616164931.png|500]]
-## Beyond Language Modeling
+### Applications
 Transformers can be used even for task not related to language:
 * **machine translation**: 
   ![[Pasted image 20250616170208.png|400]]
@@ -2571,16 +2573,15 @@ Transformers can be used even for task not related to language:
 > [!info] 
 > https://jalammar.github.io/illustrated-stable-diffusion/
 > https://stable-diffusion-art.com/how-stable-diffusion-work/
-## Introduction
-In order to better understand how diffusion models work, a gentle introduction is appropriate.
 
-A diffusion model is a complex NNs able to generate (e.g.) images, based on some input text and/or images. It means that it has been trained to understand both text and images meaning.
+Diffusion models are complex NNs able to generate (e.g.) images, based on some input text and/or images. It means that it has been trained to understand both text and images meaning.
+
 ![[stable-diffusion-img2img-image-to-image.png|500]]
 #MEM 
 ![[stable-diffusion-components-and-tensors.png]]
 A diffusion model is made up by two main components:
 * **Text Encoder**: translates the text information into a numeric representation that captures the meaning of the text
-* **Image Generator**: more complex component made up by
+* **[[#Image Generator]]**: more complex component made up by
 	* [[#Image Information Creator]]
 	* [[#Image Decoder]]
 ## Image Generator
@@ -2675,7 +2676,10 @@ A **cross-attention layer** is added between each couple of adjacent ResNet bloc
 The behavior is the same as seen for [[#13. Transformers]]: <u>the cross-attention layer combines the Queries of the embeddings coming out the ResNet with the Keys/Values of the ones that encode the text prompt</u>.
 This process is done multiple times by the UNet and can be formalized with the formula:
 $$
-\mathrm{softmax}((W_{Q}S_{2})(W_{K}S_{1})^T)W_{V}S_{1}
+\begin{align}
+\mathrm{softmax}((W_{Q}S_{2})(W_{K}S_{1})^T)W_{V}S_{1} &= \\
+&=\mathrm{softmax}(Q_{2}K_1)^T)V_1
+\end{align}
 $$
 where:
 * $S_1$: text embeddings
@@ -2742,11 +2746,19 @@ In the image below, we could assume that each set is a semantic set of latent im
 ![[image-106.png]]
 *Left: unguided. Middle: small guidance scale. Right: large guidance scale.*
 
-In order to implement guidance, an additional model is required.
+In order to implement guidance, an additional model (classifier) is required<font color="#6425d0">, so one more forward pass per step:</font>
+1. <font color="#6425d0">the UNet predicts the noise</font>
+2. <font color="#6425d0">the noisy input and the UNet prediction are given to the **classifier**: it will tell how to modify the noisy input to make it more aligned with the target class</font>
+3. <font color="#6425d0">UNet’s prediction is adjusted w.r.t. on the classifier output (gradient)</font>
 ### Classifier-free guidance
 This is an improvement w.r.t. the previous approach: here a guidance is implemented without a dedicated model.
 The idea is to train a conditional diffusion model, so a diffusion model where the conditioning part is within the UNet.
-As in previous approach, guidance strength is parameterized by **classifier guidance scale** (**CFG** value).
+As in previous approach, guidance strength is parameterized by **classifier guidance scale** (**CFG value**).
+
+<font color="#6425d0">Basically two forward passes are done:</font>
+1. <font color="#6425d0">forward pass through a conditional model</font>
+2. <font color="#6425d0">forward pass through an unconditional model (context empty)</font>
+3. <font color="#6425d0">use the CFG value to weight the average between the two previous results, to get the final one</font>
 ### Stable Diffusion v1 vs v2
 |                | Stable Diffusion v1 | Stable Diffusion v2                |
 | -------------- | ------------------- | ---------------------------------- |
