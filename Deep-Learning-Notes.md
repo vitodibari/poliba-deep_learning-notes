@@ -85,7 +85,7 @@ Gradient Descent can be applied in all its flavors.
 Gradient Descent is not that practical to use, because of the milions features involved.
 Mini-batched are often used to enable parallelization.
 
-> [!NOTE] ⚠️ **Practical hints**
+> [!warning] **Practical hints**
 > - use ReLU (widely used for DL models)
 > - always shuffle data
 > - normalize data (to prevent learning rate problems due to different data scales)
@@ -272,7 +272,7 @@ $$
 Where:
 * $\Phi(x)$ is the Cumulative Distribution Function for a Gaussian Distribution
 
-> [!NOTE] 💡
+> [!tip]
 > Note that GELU is non-monotonic.
 
 ![[Pasted image 20250330211639.png|450]]
@@ -314,7 +314,7 @@ x & \text{otherwise}
 \end{cases}
 $$
 ![[Pasted image 20250331143803.png|450]]
-> [!NOTE] 💡
+> [!tip]
 > Works very well when weight are kept within the small value range.
 ### Threshold
 $$
@@ -324,7 +324,7 @@ x & \text{if } x > threshold \\
 value & \text{otherwise}
 \end{cases}
 $$
-> [!NOTE] ⚠️
+> [!warning]
 > No more used!
 ### Tanhshrink
 $$
@@ -423,10 +423,10 @@ l_{n}=|x_{n}-y_{n}|
 $$
 MAE can be also intended as **reduced** (a scalar is returned) using `mean` or `sum`.
 
-> [!NOTE] 💡
+> [!tip]
 > It is more robust to outliers and noise than [[#Mean Squared Error (L2 loss)]] (MSE squares the errors, so it is more sensitive)
 
-> [!NOTE] ⚠️
+> [!warning]
 > L1 loss is not differentiable at the bottom 0.
 ### Smooth Mean Absolute Error (smooth L1 loss)
 $$
@@ -442,7 +442,7 @@ $$
 It basically switches from L1 to L2 when the (element-wise) error falls below 1.
 It is known also as **Huber Loss** or **Elastic Network**.
 
-> [!NOTE] 💡
+> [!tip]
 > Often used in computer vision due to its robustness against outliers.
 ### L1 vs L2 for Computer Vision
 It is better to use L1 because returns more sharper images.
@@ -534,7 +534,7 @@ l(x,y)=L=\{l_{1},\dots,l_{N}\}^T
 \quad \text{with} \quad
 l_{n}=-w_{y_{n}}[y_{n}\log \sigma(x_{n})+(1-y_{n})\log(1-\sigma(x_{n}))]
 $$
-> [!NOTE] ⚠️
+> [!warning]
 > This version is more numerically stable than just using a plain Sigmoid followed by a BCELoss.
 ## Adaptive Log Softmax with Loss
 It is basically an efficient softmax approximation of softmax for large number of classes (e.g. millions of classes). It implements tricks to improve the speed of the computation.
@@ -555,7 +555,7 @@ where:
 * $y_n$: is the tensor of the $n$-th label (from output distribution)
 To avoid underflow issues when computing this quantity, this loss expects the argument `input` in the log-space.
 
-> [!NOTE] ⚠️
+> [!warning]
 > It has the disadvantage that <u>it is not merged with a softmax or log-softmax so it may have numerical stability issues due to floating point operations.</u>
 ## Ranking Losses
 > [!info]
@@ -1270,7 +1270,7 @@ Here a list of (most common) type of layers used:
 	* implements a fixed function
 * **FC**: each neuron will be connected to all the elements in the volume of the previous layer. So it has WxHxD neurons (where W, H, D are dimensions of the previous layer).
 
-> [!NOTE] 💡 CNNs intuition
+> [!tip] CNNs intuition
 > During training, they will learn filters that will get activated when a particular visual feature is given as input.
 ## Local Connectivity
 Local connectivity is what makes CNNs more convenient than FC NNs, especially for images.
@@ -1281,7 +1281,7 @@ The spatial extent of the connectivity is the hyperparameter **receptive field o
 ![[Pasted image 20250407172251.png|400]]
 *Each “ball” is a scalar calculated by 5 different filters on the same receptive field.*
 
-> [!NOTE] ⚠️ Notation
+> [!warning] Notation
 > From now on, the volume notation changes to DxWxH.
 ### Fully Connected Layer
 ![[Pasted image 20250407173854.png|600]]
@@ -1395,7 +1395,7 @@ The sequence modeling problem would be much easier to solve if the <u>model used
 RNNs are **deterministic**: they return the same output for the same input sequence.
 They are hard to train because of their computational power.
 
-> [!NOTE] 💡 Are RNNs deterministic?
+> [!tip] Are RNNs deterministic?
 > Yes they are, but some of them give different answers if the same question if asked twice.
 > This happens because:
 > * RNNs use previous info (context) to answer
@@ -1422,10 +1422,10 @@ $$
 As it is shown in the formula, weights are just $W_{xh}, W_{hh}, W_{hy}$, where $W_{hh}$ is used at each step for each sequence element to update hidden state.
 It is better to treat the initial state as learnable parameters: random init → backpropagation using [[#Backpropagation Through Time (BPTT)]].
 
-> [!NOTE] 💡
+> [!tip]
 > RNNs are basically feedforward NNs that keep reusing the same weights.
 
-> [!NOTE] 💡
+> [!tip]
 > RNNs can be also used across time, by feeding time series values as they are read.
 
 #### Use modes
@@ -1503,7 +1503,7 @@ This action is controlled by:
 	* 1 → important
 <u>The output of a cell is the hidden state</u> $h_{t}$.
 
-> [!NOTE] 💡
+> [!tip]
 > Cell state $c_t$ is also called **long-term memory**.
 > Hidden state $h_t$ is also called **short-term memory**.
 ### Gradient Flow
@@ -1581,7 +1581,7 @@ ML models are designed to learn **regularities** from data. More specifically, <
 
 **How to prevent false regularities?**
 - <u>get more data (best way)</u>;
-- just-right model’s [[#Capacity]] to fit just true regularities while leaving wrong (and waker) regularities away;
+- just-right model’s [[#Capacity]] to fit just true regularities, while leaving wrong (and weaker) ones away;
 - average many different models on same data ([[#Combining models]]);
 - train model on different datasets (**bagging**);
 - use a single NN, but average the outputs made by different weight vectors (**bayesian approach**).
@@ -1600,7 +1600,7 @@ Tuning meta-parameters means prevent overfitting, because we’re just finding t
 ### Early Stopping
 Training big models with huge amount of data → a lot of computation → weights get bigger → model gets more complex → overfitting, if training is not stopped in time.
 
-The idea is to <u>stop the model’s weights from getting too big</u>, in order to <u>keep hidden units (activations) in their linear range so to have a “simpler” model</u> (not too not-linear).
+The idea is to <u>stop the model’s weights from getting too big</u>, in order to <u>keep hidden units (activations) in their linear range so to have a “simpler” model</u> (not too non-linear).
 ### Regularization
 Recap [here](https://www.notion.so/Machine-Learning-Notes-fd12021b7a554122bce07e4233196a54?pvs=21).
 
@@ -1627,12 +1627,19 @@ Results from multiple predictors are averaged together.
 ### Product
 Results from multiple predictors are combined using geometric mean (for $N$ models, $N$-the square of their products).
 ## Dropout
-It is a famous regularization technique (aims at preventing overfitting).
+> [!info]
+> https://youtu.be/ARq74QuavAo
+
+It is a famous regularization technique, so aims at preventing overfitting.
+It is widely used in the computer vision field.
 
 **\[Train time]**
-*Dropping* a neural network node means to <u>delete that node with its incoming and outgoing edges, with a <b>dropout probability</b></u> $p$ (fixed at the beginning).
+*Dropping* a neural network node means to <u>randomly delete that node with its incoming and outgoing edges, with a <b>dropout probability</b></u> $p$ (fixed at the beginning).
 A layer where dropout has been used is called **dropout layer**.
 In practice, neurons are not omitted, but their weights are lowered to 0.
+
+> [!tip] 
+> <u>The main intuition is to train the neurons to not rely too much on any feature/input, so they will “automatically“ spread out weights for all the connections they have.</u>
 
 Neurons eligible for dropping are:
 * input nodes (with probability very close to 1);
@@ -1649,10 +1656,7 @@ All neurons are used, but their outgoing weights are lowered by a factor equal t
 So, if $p=0.5$ then the weight will get halved.
 Of course, it’s very different from averaging all the dropped out models, but it’s a good and fast approximation.
 
-> [!💡] 
-> <u>The main intuition is to train the neurons to not rely too much on any feature/input, so they will “automatically“ spread out weights for all the connections they have.</u>
-
-> [!💡] 
+> [!tip]
 > *If your deep neural net is not overfitting you should be using a bigger one!*
 
 # 12. Autoencoders
@@ -1671,7 +1675,7 @@ Autoencoders can also be used as compression algorithms: input data ($x$), repre
 
 ![[Pasted image 20250215175619.png]]
 
-> [!💡]
+> [!tip]
 > $z$ is a prediction of $x$.
 
 In this case, the autoencoder is split:
@@ -1814,7 +1818,7 @@ Here a second model enters the scene: the **discriminator**: it <u>takes samples
 <u>The idea is to make the generator generate *fake* images with a high enough quality to fool the discriminator</u> and the only way to do that is bringing the generated distribution closer to the true one: in that case, the discriminator won’t be able to discriminate generated from true and won’t do better than returning true in one case out of two ($accuracy=0.5$).
 (Of course, at the beginning of the training, both G and D are not trained.)
 
-> [!💡]
+> [!tip]
 > Is indirect comparison less difficult than direct one? 
 > And how to find the discriminator?
 > 
@@ -1827,13 +1831,13 @@ In GANs, G and D are trained jointly, with opposite goals:
 * G must fool D: at each iteration, G weights are updated to maximize the classification error.
 * D must detect results generated by G: at each iteration, D weights are updated to minimize the classification error.
 
-> [!💡]
+> [!tip]
 > These opposite goals explain why those networks are *adversarial*.
 
 Both networks try to beat each other and the competition makes them “progress” with
 respect to their respective goals.
 
-> [!💡] POV: game theory
+> [!tip] POV: game theory
 > A GAN scenario can be compared to a minimax two-player game, where the equilibrium state corresponds to the situation where the generator produces data from the exact targeted distribution and where the discriminator predicts “true” or “generated” with probability 1/2 for any point it receives.
 > So both are *perfect* adversarial players.
 
@@ -2395,7 +2399,7 @@ where:
 
 The formula does not rely on the word itself, but just on its position. This means that positional encoding values can be calculated a priori.
 
-> [!💡] 
+> [!tip] 
 > Naively, one could chose a growing function, that models the absolute position of the word in the input sequence, from the first to the last one.
 > However, this approach will lead to unbounded values for the positional vector, that could overcome the semantics of the embedding, when added.
 > 
@@ -2417,7 +2421,7 @@ Each decoder is split in two parts:
   However, a mask ($score=-\infty \Rightarrow \mathrm{softmax(score)=0}$) is applied on the further positions in the output sequence;
 * **Cross-Attention (or Encoder-Decoder Attention)**: again, identical BUT K and V used are taken from the context (encoder’s output). In this way, the output sequence gets from context from the input one.
 ![[Pasted image 20250411171422.png]]
-> [!💡] 
+> [!tip] 
 > Most of encoders are represented with two outgoing arrows that reach the decoder cross-attention layer: these two arrows represents Queries and Keys.
 ## Final Layer
 ==#TODO: fa un po’ schifo, ma anche di più di ciò che sta nelle slide==
@@ -2628,15 +2632,14 @@ Given the *noisy* dataset, the UNet can be trained at recognizing the pattern of
 
 <u>This means that if the predicted noise is subtracted from the noisy image, the output image will be closer to the original one.</u> To be precise, the output distribution of pixels will be closer to the desired one (the world of pixel arrangements desired).
 
-> [!⚠️]
-> The diffusion process we described so far generates images without using any text data: it would generate great looking images, but there is no way of controlling the content.
-
+> [!warning]
+> The diffusion process described so far generates images without using any text data: it would generate great looking images, but there is no way of controlling the content.
 ### Latent space
 ![[stable-diffusion-forward-and-reverse-process-v2.png|500]]
 <u>Again, the whole diffusion process happens in the latent space, much faster than in pixel space.</u> This happens because of the *compression* effect given by the latent representations.
 Image encoders and decoders are used to get in and out of the latent space.
 
-> [!💡] “The infamous two heads”
+> [!tip] “The infamous two heads”
 > It is important to keep in mind how diffusion models have been trained and the images used during training.
 > Some tried to generate images larger than 512x512 by using models trained on smaller ones: some hallucinations occured, like duplicated objects.
 
@@ -2680,7 +2683,7 @@ where:
 
 Even if the sources of the embeddings are different (images and text), they are still compatible because text was encoded by CLIP.
 
-> [!💡] Perceiver IO & SelfDoc
+> [!tip] Perceiver IO & SelfDoc
 > Cross-attention is used to implement multi-modal architectures. A **multi-modal model** can handle different types of inputs such as (image, text, audio, etc.).
 > 
 > **Perceiver IO** is a general-purpose deep learning architecture introduced by DeepMind. The model can produce structured, meaningful outputs of any form.
@@ -2706,7 +2709,7 @@ The model task here is being able to modify just a part of the image, the one se
 This approach is basically an improvement made on top of [[#Image-to-Image]] approach.
 Depth-to-Image models can be conditioned using depth maps too.
 
-> [!💡] MiDaS
+> [!tip] MiDaS
 > When depth maps for a certain image are not available, they can be generated as well.
 > MiDaS is a <u>model able to predict the depth map of the input image</u>.
 
@@ -2726,7 +2729,7 @@ During training, negative samples are used too: the embedding of a caption must 
 
 The result is a couple of encoders able to produce embeddings where (e.g.) an image of a dog and the sentence “a picture of a dog” are similar.
 
-> [!💡]
+> [!tip]
 > CLIP was actually trained on images crawled from the web along with their “alt” tags.
 ## Guidance
 **Guidance** is a way to incorporate image labels in the diffusion mechanism, so to guide the whole process to more appropriate results.
