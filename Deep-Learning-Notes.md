@@ -33,24 +33,20 @@ It is a directed graph where:
 * **edges** represent data flow. 
 Graphs can help in understanding how to optimize the whole computation by parallelizing calculations on different hardware components.
 ### Block diagram notation
+![Untitled|50](assets/Untitled%201.png)
 **Variables**
+* ***Observed variable**: input, desired output, etc.
+* **Computed variable**: output of deterministic functions (see below)
 
-**Observed variable**: input, desired output, etc.
-
-**Computed variable**: output of deterministic functions (see below)
-
+![[Pasted image 20250624103903.png|200]]
 **Deterministic function**: 
 multiple inputs and multiple outputs
 implicit parameter variable
 
+![[Pasted image 20250624103941.png|200]]
 **Scalar-valued function**: 
 single scalar output
 (used mostly for cost functions)
-
-![Untitled|70](assets/Untitled%201.png)
-
-![Untitled|300](assets/Untitled%202.png)
-
 ### Parameterized Machine Learning Model
 Here is an example of a simple ML model $G$, represented with a computation graph.
 
@@ -63,8 +59,7 @@ $$
 The idea is that both $x$’s and $y$’s are inputs for the process that aims at training the system at lowering the cost function defined.
 
 In general, what we do is calculating losses using $y$’s and then perform backpropagation to adjust model’s weight; it is known as *backpropagation towards x*.
-However, given that also $y$’s are inputs, even *backpropagation towards y* is possible. 
-==#TODO:  backpropagation towards y==
+However, given that also $y$’s are inputs, even *backpropagation towards y* is possible (see [[#Energy Based Models]]).
 ### Forward and Backward propagation with diagrams
 
 ### Neural Networks with Block diagrams
@@ -72,18 +67,13 @@ However, given that also $y$’s are inputs, even *backpropagation towards y* is
 
 ## Machine Learning vs Deep Learning
 
-Hand-engineered feature extraction
-
-Multi-layer feature automatic extraction: from lower-level features (es. pixel) to abstracted 
-
-$x$ was the input while $y$ was considered an output, used to compute the cost function.
-
-Both $x$ and $y$ are inputs and errors can be backpropagated towards both.
-
-Gradient Descent can be applied in all its flavors.
-
-Gradient Descent is not that practical to use, because of the milions features involved.
-Mini-batched are often used to enable parallelization.
+* Hand-engineered feature extraction
+* Multi-layer feature automatic extraction: from lower-level features (es. pixel) to abstracted 
+* $x$ was the input while $y$ was considered an output, used to compute the cost function.
+* Both $x$ and $y$ can be considered as inputs and errors can be backpropagated towards both.
+* Gradient Descent can be applied in all its flavors.
+* Gradient Descent is not that practical to use, because of the milions features involved.
+* Mini-batched are often used to enable parallelization.
 
 > [!warning] **Practical hints**
 > - use ReLU (widely used for DL models)
@@ -96,11 +86,13 @@ Mini-batched are often used to enable parallelization.
 # 3. Basic Architectures
 ==#TODO ==
 ## Multiplicative Modules
-==#TODO ==
+![[Pasted image 20250624102706.png|300]]
+### Attention Module
+![[Pasted image 20250624102731.png|350]]
 ## Mixture of Experts
-==#TODO ==
+![[Pasted image 20250624102821.png|600]]
 ## Parameter Transformations
-==#TODO ==
+![[Pasted image 20250624102940.png|350]]
 ### Shared Weights
 ==#TODO ==
 # 4. Learning Representations
