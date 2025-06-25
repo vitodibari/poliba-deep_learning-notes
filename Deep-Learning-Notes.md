@@ -6,12 +6,12 @@
 </aside>
 
 ==#TODO== means that the concept is incomplete
-#MEM means that the concept must be memorized for the oral exam
+#MEM means that the concept/formula must be memorized for the oral exam (at least the ones I did memorize 🙃)
 # 1. Milestones
 1997 - Deep Blue (IBM)
 2011 - Watson (IBM)
 2016 - AlphaGo (Google DeepMind)
-2017 - AlphaZero (Google DeepMind)
+2017 - (Google DeepMind)
 2017 - StarCraft II AI (Google DeepMind x Blizzard)
 2019 - AlphaStar (Google DeepMind)
 2019 - OpenAI five
@@ -488,7 +488,7 @@ samples to use, <u>we iterate through the smaller buffer from the beginning agai
 Following the *frequency equalization* process leads to the problem that our NN model wouldn’t know the relative frequency of the actual samples. To solve that, we can <u>fine-tune the system by
 running a few epochs at the end with the actual class frequency</u>, so that the system adapts
 to the biases at the output layer to the data frequency.
-### CrossEntropyLoss
+### Cross Entropy Loss
 > [!info]
 > https://youtu.be/Pwgpl9mKars
 
@@ -564,6 +564,7 @@ A CNN can be trained to infer if two face images belong to the same person or no
 ![[triplet_loss_faces.png|400]]
 *Example of triplet ranking loss*
 ### Hinge Embedding Loss
+#MEM
 $$
 l(x,y)=L=\{l_{1},\dots,l_{N}\}^T
 \quad \text{with} \quad
@@ -581,18 +582,21 @@ where:
 * $\delta$ is the margin
 It can be also intended as reduced (a scalar is returned) using `mean` or `sum`.
 ### Margin Ranking Loss
+#MEM
 It is a pairwise ranking loss.
 $$
-L(x,y)=\max(-y \cdot (x_{1}-x_{2})+\delta,0)
+L(x,y)=\max(-y \cdot (x_{1}-x_{2})+\delta,0)=\max(-y \cdot x_{n}+\delta,0)
 $$
 where:
 * $x_{1}$ is the input for the first category
 * $x_{2}$ is the input for the second category
+* $x_{n}$ pairwise distance
 * $y$ is the label tensor that contains 1 or -1 values
 	* 1: two input samples are similar
 	* -1: two input samples are not similar
 * $\delta$ is the margin
 ### Triplet Margin Loss
+#MEM 
 It is a triplet ranking loss.
 $$
 L(a,p,n)=\max \{ d(a_{i},p_{i}) - d(a_{i},n_{i}) + \delta, 0\}
@@ -801,7 +805,7 @@ Momentum updates equations in GD:
 #MEM 
 $$
 \begin{aligned}
-p_{k+1} &= \beta p_k + \gamma\nabla L(X,y,w_k) \\
+p_{k+1} &= \beta p_k - \gamma\nabla L(X,y,w_k) \\
 w_{k+1} &= w_k + p_{k+1}
 \end{aligned}
 $$
@@ -817,11 +821,12 @@ where:
 ### Old Momentum Formula
 $$
 \begin{align}
-p_{k+1} &= \beta p_k + (1-\beta)\gamma\nabla L(X,y,w_k) \\
+p_{k+1} &= \beta p_k - (1-\beta)\gamma\nabla L(X,y,w_k) \\
 w_{k+1} &= w_k + p_{k+1}
 \end{align}
 $$
-where $\beta$ was a tradeoff factor too.
+where $\beta$ was a tradeoff factor.
+It has been omitted because of its limited contribute to the final outcome.
 ### Stochastic Heavy Ball Method
 #MEM 
 $$
@@ -829,7 +834,6 @@ w_{k+1}=w_k-\gamma\nabla L(X,y,w_k)+\beta(w_k-w_{k-1})
 $$
 where:
 * $0\le\beta<1$ tells how much of the previous direction to keep.
-It has been omitted because of its limited contribute to the final outcome.
 
 > [!tip]
 > - use momentum with Stochastic Gradient Descent only
@@ -860,8 +864,8 @@ The previous momentum method consisted in:
 $$
 \begin{align}
 \hat w_k &= w_k-\beta p_k \\
-p_{k+1} &= \beta p_k+\gamma\nabla L(X,y,\hat w_k) \\
-w_{k+1} &= w_k- p_{k+1}
+p_{k+1} &= \beta p_k - \gamma\nabla L(X,y,\hat w_k) \\
+w_{k+1} &= w_k + p_{k+1}
 \end{align}
 $$
 > [!note]
@@ -919,14 +923,14 @@ Some tips:
 
 `rprop` stands for **resilient (back)propagation**.
 
-<u>The idea is to determine the learning rate value for each parameter, at each update step just by looking at the change of sign of the gradient.</u>
+<u>The idea is to determine the learning rate value for each parameter, at each update step just by looking at the change of sign of the gradient and by discarding the actual value of it.</u>
 If the current gradient keeps the same sign of the previous one:
 * then: increase the step size in that direction, up to a limit $\Gamma_{max}$;
 * else: decrease the step size (in that direction), up to a limit $\Gamma_{min}$.
   In this case, the minimum was missed and gradient is *artificially* set to 0 ($g_t^i \leftarrow 0$), so the next iteration will end up in the third branch (second else). This is done to skip to avoid the *double punishment*, so to end up in the second branch over and over.
 
 > [!NOTE] **Double punishment**
-> #TODO 
+> ==#TODO ==
 
 #MEM 
 ![[Screenshot 2025-04-04 alle 08.30.11.png|500]]
@@ -2032,12 +2036,14 @@ Some preliminary definitions should be made.
 
 Given the graph $G$, an arbitrary ordering of the $n$ nodes is done.
 Its adjacency matrix $A$ is denoted, with the **diagonal matrix** $D$ of $G$ where:
+#MEM 
 $$
 D_{v}=\sum_{u}A_{vu}
 $$
 The **degree** of a node $v$ is the <u>number of edges incident at $v$ itself.</u>
 
 Finally, the graph Laplacian $L$ is:
+#MEM 
 $$
 L=D-A
 $$
@@ -2045,17 +2051,19 @@ $$
 The graph Laplacian shows up in different mathematical problems on graphs.
 
 Now, polynomials of the following form can be built:
+#MEM 
 $$
 p_{w}(L)=w_{0}I_{n}+w_{i}L+w_{2}L^2+\dots+w_{d}L^d=\sum_{i=0}^d w_{i}L^i
 $$
 $p_w(L)$ can be represented using a shorter annotation: $w=[w_0,\dots,w_d]$.
 
-These polynomials can be thought of as the equivalent of filters in CNNs, and the coefficients $w$ as the weights of the filters.
+<u>These polynomials can be thought of as the equivalent of filters in CNNs</u>, and the coefficients $w$ as the weights of the filters.
 ![[Pasted image 20250520192924.png|400]]
 Lets’s suppose nodes have one-dimensional features, so $x_v \in \mathbb R \text{ for } v \in V$.
 Alle the nodes’ features can be stacked to get a vector $x \in \mathbb R^n$.
 
 Now a **convolution** of $x$ can be defined:
+#MEM 
 $$
 x'=p_{w}(L)x
 $$
@@ -2143,6 +2151,7 @@ These two are the main operations used in the message passing scheme, performed 
 These steps can be further formalized:
 1. **Node aggregation**
    <u>For each node, the aggregation function combines the representations of neighboring nodes</u> $j$ and the current node $i$.
+   #MEM 
    $$
    m_{i}^{(l)}=\sum_{j=N(i)}f^{(l)} \left(
    h_{i}^{(l-1)},h_{j}^{(l-1)},e_{ij}
@@ -2156,6 +2165,7 @@ These steps can be further formalized:
    * $f^{(l)}$ is a learnable function
 2. **Node update**
    The result at layer $l$, $m_i^{(l)}$, is used to <u>update the representation of node</u> $i$.
+   #MEM 
    $$
    h_{i}^{(l)}=g^{(l)}(h_{i}^{(l-1)},m_{i}^{(l)})
    $$
@@ -2252,9 +2262,11 @@ $$
    \right)
    \quad \forall v \in V
    $$
-   where the original paper considers the following choices for $\text{AGG}$:
+   where:
+	* the original paper considers the following choices for $\text{AGG}$: ==#TODO ==
+	* the $AGG$ neighboring nodes’ embeddings are concatenated with the current one
 
-3. output graph is used to make predictions
+4. output graph is used to make predictions
    $$
    \hat{y_{v}}=\text{PREDICT}\left( {\color{Orange}h_{v}^{(K)}} \right)
    $$
@@ -2756,7 +2768,7 @@ As in previous approach, guidance strength is parameterized by **classifier guid
 | -------------- | ------------------- | ---------------------------------- |
 | Text embedding | CLIP                | OpenCLIP (larger and open dataset) |
 | Training       | 200-250k steps      | 550k steps                         |
-# Energy Based Models
+# <font color="#00b050">Energy Based Models</font>
 > [!info]
 > https://youtu.be/m61KiAMCJ5Q
 > https://youtu.be/BqgnnrojVBI
