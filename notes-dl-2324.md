@@ -1,8 +1,13 @@
+# Deep Learning Notes
+A.Y. 2023-2024, Polytechnic of Bari
+Professor: Vito Walter Anelli
+Author: Vito Di Bari
+## Reading suggestions
 <aside>
 <font color="#6425d0">⚠️ Purple sections are AI-generated</font>
 </aside>
 <aside>
-<font color="#00b050">⚠️ Green sections are deep divings</font>
+<font color="#00b050">⚠️ Green sections are deep divings, so not mandatory for the exam</font>
 </aside>
 
 ==#TODO== means that the concept is incomplete
@@ -702,13 +707,13 @@ Step decay schedule drops the learning rate by a factor every $N$ epochs.
 ### Time-based Decay (Learning Rate Annealing)
 Learning rate value is calculated using a function (linear or exponential) of the epoch.
 
-![image.png](assets/image.png)
+![image.png](Personale/poliba-deep_learning-notes/assets/image.png)
 ### Decrease on plateaus
 The idea is to keep using a relatively big (especially in the beginning) learning rate to quickly approach a local minima and reduce it once we hit a plateau.
 
-![image.pngQ|400](assets/image%201.png)
+![image.pngQ|400](Personale/poliba-deep_learning-notes/assets/image%201.png)
 ### Cyclic learning rates
-![image.png](assets/image%202.png)
+![image.png](Personale/poliba-deep_learning-notes/assets/image%202.png)
 ## Initialize weights
 > [!info]
 > https://machinelearningmastery.com/weight-initialization-for-deep-learning-neural-networks/
@@ -779,7 +784,7 @@ Recap [here](https://www.notion.so/Machine-Learning-Notes-fd12021b7a554122bce07e
 > https://distill.pub/2017/momentum/
 > https://proceedings.mlr.press/v28/sutskever13.html
 
-![image.png](assets/image%203.png)
+![image.png](Personale/poliba-deep_learning-notes/assets/image%203.png)
 
 Momentum <u>is used to solve the plateau problem by keeping optimizing when a plateau is encountered. It helps increasing optimization speed in general.</u>
 
@@ -791,9 +796,9 @@ Outcomes are:
 - improves loss function exploration.
 
 Momentum is very useful also when facing saddle points or local minima.
-![image.png|400](assets/image%204.png)
+![image.png|400](Personale/poliba-deep_learning-notes/assets/image%204.png)
 *Scenario without momentum*
-![image.png|400](assets/image%205.png)
+![image.png|400](Personale/poliba-deep_learning-notes/assets/image%205.png)
 *Scenario with momentum*
 
 > [!info]
@@ -1867,7 +1872,7 @@ $$
 > https://youtu.be/zCEYiCxrL_0
 > https://gnn.seas.upenn.edu/
 
-![image.png](assets/image%206.png)
+![image.png](Personale/poliba-deep_learning-notes/assets/image%206.png)
 
 A **graph** is a data structure made up of nodes connected by edges. This whole connection (graph) represents information with no definite beginning or end.
 
@@ -1884,7 +1889,7 @@ can contain info about: node identity, number of neighbors
 can contain info about: edge identity, edge weight
 - **global** (or **master** **node**) **embedding**
 can contain info about: number of nodes, longest path
-![image.png|400](assets/image%207.png)
+![image.png|400](Personale/poliba-deep_learning-notes/assets/image%207.png)
 There are different ways to represent graph connections, each of them suitable for different tasks.
 ## How to represent Graphs
 ### Adjacency Matrix
@@ -1899,14 +1904,14 @@ Another way of representing graphs is by using **adjacency lists** (different fr
 ![IMG_1AF729ADED7B-1.jpeg|500](assets/IMG_1AF729ADED7B-1.jpeg)
 ### Graph uses
 - Images as graphs
-  ![image.png|500](assets/image%208.png)
+  ![image.png|500](Personale/poliba-deep_learning-notes/assets/image%208.png)
   Images can be represented as graphs where each pixel is a node where the RGB value is encoded and it’s linked to its 8 neighbors via an edge (see last image).
   Moreover, adjacency matrices can be used.
 
 - Text as graphs
-  ![image.png|500](assets/image%209.png)
+  ![image.png|500](Personale/poliba-deep_learning-notes/assets/image%209.png)
 - Molecules as graphs
-  ![image.png|500](assets/image%2010.png)
+  ![image.png|500](Personale/poliba-deep_learning-notes/assets/image%2010.png)
 - Social Networks as graphs
   ![image.png|500](assets/eba5cc85-91da-4deb-a66e-b7d14bec4c61.png)
 Graphs can be used to accomplish different type of prediction tasks such as:
@@ -1951,7 +1956,7 @@ The *message passing step* is performed several times ($K$). The final graph wil
 
 ### Simple GNN
 
-![image.png](assets/image%2011.png)
+![image.png](Personale/poliba-deep_learning-notes/assets/image%2011.png)
 The idea is to learn new embeddings for each component of the graph, without changing the structure of the graph itself.
 
 The so called **GNN Layer** uses a dedicated MLP for the three types of components:
@@ -1972,15 +1977,15 @@ $\huge\rho \small _{E_{n} \rightarrow V_{n}}$ represents a polling pass that upd
 
 **Pooling w/o message passing**
 * Pooling edges embeddings to nodes (e.g. when node data is missing)
-  ![image.png|600](assets/image%2012.png)
+  ![image.png|600](Personale/poliba-deep_learning-notes/assets/image%2012.png)
   
 * Pooling nodes embeddings to edges (e.g. when edge data is missing)
   
-  ![image.png|600](assets/image%2013.png)
+  ![image.png|600](Personale/poliba-deep_learning-notes/assets/image%2013.png)
   
 * Pooling nodes embeddings to global (e.g. when global info is needed)
   
-  ![image.png|600](assets/image%2014.png)
+  ![image.png|600](Personale/poliba-deep_learning-notes/assets/image%2014.png)
 **Pooling w/ message passing**
 It is possible to <u>make more sophisticated predictions by using pooling within the GNN layer, in order to make our learned embeddings aware of graph connectivity.</u>
 
@@ -2002,8 +2007,8 @@ Again, available data may not be complete, so we may want to incorporate informa
 - Pooling nodes embeddings with neighboring ones
   ![[Pasted image 20250520170059.png|600]]
 - Pooling neighboring edges embeddings to nodes
-  ![image.png|600](assets/image%2015.png)
-  ![image.png|600](assets/image%2016.png)
+  ![image.png|600](Personale/poliba-deep_learning-notes/assets/image%2015.png)
+  ![image.png|600](Personale/poliba-deep_learning-notes/assets/image%2016.png)
   > [!warning]
 > Node and edge information are not necessarily the same size/shape.
 > When they differ, one way is to learn a linear mapping from the space of edges to the nodes one.
@@ -2014,7 +2019,7 @@ Again, available data may not be complete, so we may want to incorporate informa
   <u>The idea is to enable alle the nodes to communicate with each other</u>.
   
   One solution is to implement one (or more) **master node** that connects all the nodes, to allow information exchange between very distant nodes.
-  ![image.png|600](assets/image%2017.png)
+  ![image.png|600](Personale/poliba-deep_learning-notes/assets/image%2017.png)
 
 Of course, even **domain specific aggregation operations** can also be designed, taking into account edge types, degree of connectivity, etc.
 
